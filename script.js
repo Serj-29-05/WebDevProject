@@ -1,4 +1,3 @@
-
 const tableBody = document.querySelector("#inventoryTable tbody");
 
 function saveInventory() {
@@ -17,7 +16,7 @@ function loadInventory() {
   tableBody.innerHTML = "";
   const loggedInUser = localStorage.getItem("loggedInUser");
   const isAdmin = loggedInUser === "admin";
-  // Show/hide action column and add form
+
   document.getElementById("actionHeader").style.display = isAdmin ? "table-cell" : "none";
   document.getElementById("adminForm").style.display = isAdmin ? "block" : "none";
   items.forEach(item => {
@@ -49,21 +48,15 @@ function addItem() {
     return;
   }
 
-  const row = document.createElement("tr");
-  row.innerHTML = `
-    <td>${name}</td>
-    <td>${stock}</td>
-    <td class="action-cell"><button onclick="updateStock(this)">Update</button> <button onclick="removeItem(this)">Remove</button></td>
-  `;
-  row.classList.add('fade-in');
-  tableBody.appendChild(row);
+
+  const items = JSON.parse(localStorage.getItem("inventoryItems") || "[]");
+  items.push({ name, stock });
+  localStorage.setItem("inventoryItems", JSON.stringify(items));
 
   document.getElementById("itemName").value = "";
   document.getElementById("itemStock").value = "";
-  saveInventory();
-  setTimeout(loadInventory, 600); // allow animation to play before reload
+  loadInventory();
 }
-
 
 
 function removeItem(button) {
@@ -139,7 +132,7 @@ window.addEventListener("DOMContentLoaded", function() {
   } else {
     showLogin();
   }
-  // Animate login section on load
+
   setTimeout(() => {
     const loginSection = document.getElementById("loginSection");
     if (loginSection) loginSection.classList.add("visible");
