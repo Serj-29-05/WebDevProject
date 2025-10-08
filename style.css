@@ -1,3 +1,75 @@
+/* Center the login error message */
+#loginError {
+  text-align: center;
+  width: 100%;
+  margin-top: 10px;
+}
+/* Fade-out animation for remove */
+.fade-out {
+  animation: fadeOut 0.5s forwards;
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; transform: translateX(40px); height: 0; }
+}
+
+/* Highlight animation for update */
+.highlight {
+  animation: highlightFlash 1s;
+}
+
+@keyframes highlightFlash {
+  0% { background: #fff3cd; }
+  50% { background: #ffe066; }
+  100% { background: transparent; }
+}
+/* Fade-in animation */
+.fade-in {
+  animation: fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+#loginSection {
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+#loginSection.visible {
+  opacity: 1;
+}
+/* Center login section */
+#loginSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+#loginSection h2 {
+  margin-bottom: 20px;
+}
+
+#loginSection input, #loginSection button {
+  margin: 10px 10px 10px 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+#loginSection form {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hide action column for users */
+.user-hide {
+  display: none !important;
+}
 body {
   font-family: 'Poppins', sans-serif;
   background-color: #fdfaf6;

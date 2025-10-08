@@ -9,25 +9,37 @@
   <header>☕ Meraki Sipside Inventory</header>
 
   <main>
-    <h2>Manage Inventory</h2>
+    <div id="loginSection">
+      <h2>Login</h2>
+      <form onsubmit="event.preventDefault(); login();">
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button type="submit">Login</button>
+      </form>
+      <div id="loginError" style="color:red; display:none;">Invalid credentials!</div>
+    </div>
 
-    <table id="inventoryTable">
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th>Stock</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Items will be dynamically added here -->
-      </tbody>
-    </table>
+    <div id="inventorySection" style="display:none;">
+      <h2>Manage Inventory</h2>
+      <button onclick="logout()" style="float:right;">Logout</button>
+      <table id="inventoryTable">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Stock</th>
+            <th id="actionHeader">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Items will be dynamically added here -->
+        </tbody>
+      </table>
 
-    <div class="form-container">
-      <input type="text" id="itemName" placeholder="Item name">
-      <input type="number" id="itemStock" placeholder="Stock" min="1">
-      <button onclick="addItem()">Add Item</button>
+      <div class="form-container" id="adminForm">
+        <input type="text" id="itemName" placeholder="Item name">
+        <input type="number" id="itemStock" placeholder="Stock" min="1">
+        <button onclick="addItem()">Add Item</button>
+      </div>
     </div>
   </main>
 
