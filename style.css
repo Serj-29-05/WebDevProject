@@ -9,6 +9,7 @@
   th, td {
     padding: 8px;
     font-size: 15px;
+    vertical-align: middle;
   }
   .form-container {
     display: flex;
