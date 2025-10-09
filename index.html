@@ -37,9 +37,11 @@
       </table>
 
       <div class="form-container" id="adminForm">
-        <input type="text" id="itemName" placeholder="Item name">
-        <input type="number" id="itemStock" placeholder="Stock" min="1">
-        <button onclick="addItem()">Add Item</button>
+        <form id="addItemForm" onsubmit="event.preventDefault(); addItem();">
+          <input type="text" id="itemName" placeholder="Item name" autocomplete="off">
+          <input type="number" id="itemStock" placeholder="Stock" min="1">
+          <button type="submit">Add Item</button>
+        </form>
       </div>
     </div>
   </main>
@@ -47,3 +49,4 @@
   <script src="script.js"></script>
 </body>
 </html>
+

@@ -87,7 +87,7 @@ function updateStock(button) {
     row.classList.add('highlight');
     setTimeout(() => row.classList.remove('highlight'), 1000);
     saveInventory();
-    setTimeout(loadInventory, 1000); // allow highlight to show before reload
+    setTimeout(loadInventory, 1000); 
   }
 }
 
