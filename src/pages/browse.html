@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Menu - Meraki Sipside</title>
+    <link rel="stylesheet" href="../styles/style.css" />
+    <link rel="stylesheet" href="../styles/browse.css" />
+    <script src="../scripts/app.js" defer></script>
+    <script src="../scripts/cart.js" type="module" defer></script>
+    <script>
+        // render items and wire add-to-checkout + category filtering + size handling
+        document.addEventListener('DOMContentLoaded', () => {
+            // Menu items updated to match provided menu image.
+            // Items that have multiple sizes use a `prices` mapping; single-price items use `price`.
+            const items = [
+                // Milktea (G | V)
+                { id: 'm1', name: 'Bubble Tea', prices: { G: 39, V: 49 }, description: 'Classic milktea with pearls', category: 'Milktea' },
+                { id: 'm2', name: 'Cookies & Cream', prices: { G: 39, V: 49 }, description: '', category: 'Milktea' },
+                { id: 'm3', name: 'Choco Hokkaido', prices: { G: 39, V: 49 }, description: '', category: 'Milktea' },
+                { id: 'm4', name: 'Matcha', prices: { G: 39, V: 49 }, description: '', category: 'Milktea' },
+                { id: 'm5', name: 'Winter Melon', prices: { G: 39, V: 49 }, description: '', category: 'Milktea' },
+                { id: 'm6', name: 'Okinawa', prices: { G: 39, V: 49 }, description: '', category: 'Milktea' },
+                { id: 'm7', name: 'Red Velvet', prices: { G: 39, V: 49 }, description: '', category: 'Milktea' },
+                { id: 'm8', name: 'Chocolate', prices: { G: 39, V: 49 }, description: '', category: 'Milktea' },
+
+                // Iced Coffee (single price 49) - no G/V
+                { id: 'ic1', name: 'Spanish Latte', price: 49, description: '', category: 'Iced Coffee' },
+                { id: 'ic2', name: 'French Vanilla', price: 49, description: '', category: 'Iced Coffee' },
+                { id: 'ic3', name: 'Salted Caramel', price: 49, description: '', category: 'Iced Coffee' },
+                { id: 'ic4', name: 'Dark Mocha', price: 49, description: '', category: 'Iced Coffee' },
+                { id: 'ic5', name: 'Matcha (Iced)', price: 49, description: '', category: 'Iced Coffee' },
+                { id: 'ic6', name: 'Hazelnut', price: 49, description: '', category: 'Iced Coffee' },
+
+                // Cheesecake (G | V: 59 | 69)
+                { id: 'ch1', name: 'Oreo Matcha', prices: { G: 59, V: 69 }, description: '', category: 'Cheesecake' },
+                { id: 'ch2', name: 'Red Velvet', prices: { G: 59, V: 69 }, description: '', category: 'Cheesecake' },
+                { id: 'ch3', name: 'Oreolicious', prices: { G: 59, V: 69 }, description: '', category: 'Cheesecake' },
+                { id: 'ch4', name: 'Creamy Cheesecake', prices: { G: 59, V: 69 }, description: '', category: 'Cheesecake' },
+                { id: 'ch5', name: 'Choco Delight', prices: { G: 59, V: 69 }, description: '', category: 'Cheesecake' },
+
+                // Fruit Tea (single price 49) - no G/V
+                { id: 'ft1', name: 'Lychee', price: 49, description: '', category: 'Fruit Tea' },
+                { id: 'ft2', name: 'Orange', price: 49, description: '', category: 'Fruit Tea' },
+                { id: 'ft3', name: 'Blueberry', price: 49, description: '', category: 'Fruit Tea' },
+                { id: 'ft4', name: 'Apple Green', price: 49, description: '', category: 'Fruit Tea' },
+                { id: 'ft5', name: 'Four Season', price: 49, description: '', category: 'Fruit Tea' },
+                { id: 'ft6', name: 'Strawberry', price: 49, description: '', category: 'Fruit Tea' },
+                { id: 'ft7', name: 'Passion Fruit', price: 49, description: '', category: 'Fruit Tea' },
+
+                // Soda (G | V: 49 | 59)
+                { id: 's1', name: 'Green Sparkle', prices: { G: 49, V: 59 }, description: 'Refreshing lime soda', category: 'Soda' },
+                { id: 's2', name: 'Blueberry Cloud', prices: { G: 49, V: 59 }, description: 'Blueberry soda with clouds', category: 'Soda' },
+                { id: 's3', name: 'Lychee Soda', prices: { G: 49, V: 59 }, description: 'Sweet lychee fizz', category: 'Soda' },
+                { id: 's4', name: 'Strawberry Burst', prices: { G: 49, V: 59 }, description: '', category: 'Soda' },
+                { id: 's5', name: 'Blue Lagoon', prices: { G: 49, V: 59 }, description: '', category: 'Soda' },
+                { id: 's6', name: 'Sparkling Apple', prices: { G: 49, V: 59 }, description: '', category: 'Soda' },
+
+                // Frappe (single price 79) - no G/V
+                { id: 'frp1', name: 'Oreo Java Chip', price: 79, description: '', category: 'Frappe' },
+                { id: 'frp2', name: 'Mango', price: 79, description: '', category: 'Frappe' },
+                { id: 'frp3', name: 'Creamy Avocado', price: 79, description: '', category: 'Frappe' },
+                { id: 'frp4', name: 'Ube', price: 79, description: '', category: 'Frappe' },
+                { id: 'frp5', name: 'Strawberry', price: 79, description: '', category: 'Frappe' },
+                { id: 'frp6', name: 'Bubble Gum', price: 79, description: '', category: 'Frappe' },
+
+                // Snacks / Sandwiches (single price)
+                { id: 'sn1', name: 'Regular Corndog', price: 40, description: '', category: 'Snacks' },
+                { id: 'sn2', name: 'Cheezy Corndog', price: 45, description: '', category: 'Snacks' },
+                { id: 'sn3', name: 'Classic Burger', price: 25, description: '', category: 'Snacks' },
+                { id: 'sn4', name: 'Cheese Burger', price: 35, description: '', category: 'Snacks' },
+                { id: 'sn5', name: 'Egg Burger', price: 45, description: '', category: 'Snacks' },
+                { id: 'sn6', name: 'Egg Burger With Cheese', price: 50, description: '', category: 'Snacks' },
+                { id: 'sn7', name: 'Egg Sandwich', price: 30, description: '', category: 'Snacks' },
+                { id: 'sn8', name: 'Ham & Egg Sandwich', price: 55, description: '', category: 'Snacks' },
+                { id: 'sn9', name: 'Classic Hotdog', price: 30, description: '', category: 'Snacks' },
+                { id: 'sn10', name: 'Cheezy Hotdog', price: 45, description: '', category: 'Snacks' },
+                { id: 'sn11', name: 'Overload Hotdog', price: 70, description: '', category: 'Snacks' },
+
+
+                // Fries (sizes R/M/L where applicable)
+                { id: 'fries1', name: 'Cheese Fries', prices: { R: 45, M: 65, L: 95 }, description: '', category: 'Fries' },
+                { id: 'fries2', name: 'Sour Cream Fries', prices: { R: 45, M: 65, L: 95 }, description: '', category: 'Fries' },
+                { id: 'fries3', name: 'BBQ Fries', prices: { R: 45, M: 65, L: 95 }, description: '', category: 'Fries' },
+                { id: 'fries4', name: 'Overload Cheezy', price: 75, description: 'Extra cheesy, single size', category: 'Fries' }
+            ];
+
+            const categories = ['All','Milktea','Iced Coffee','Cheesecake','Fruit Tea','Soda','Frappe','Snacks','Fries'];
+            const seriesNav = document.createElement('div');
+            seriesNav.className = 'series-nav';
+            categories.forEach((c, idx) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'series-item' + (idx===0 ? ' active' : '');
+                btn.textContent = c;
+                btn.dataset.cat = c === 'All' ? 'all' : c;
+                btn.setAttribute('aria-current', idx===0 ? 'true' : 'false');
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.series-item').forEach(x => {
+                        x.classList.remove('active');
+                        x.setAttribute('aria-current','false');
+                    });
+                    btn.classList.add('active');
+                    btn.setAttribute('aria-current','true');
+                    renderList(btn.dataset.cat);
+                });
+                seriesNav.appendChild(btn);
+            });
+
+            // place series nav immediately under header and keep it visible
+            const header = document.querySelector('header');
+            if (header) header.insertAdjacentElement('afterend', seriesNav);
+
+            const list = document.getElementById('menu-list');
+
+            // render function filters by category name exactly
+            function renderList(filter = 'all') {
+                list.innerHTML = '';
+                const filtered = items.filter(it => filter === 'all' ? true : it.category === filter);
+                filtered.forEach(it => {
+                    const el = document.createElement('div');
+                    el.className = 'menu-item';
+                    el.dataset.category = it.category;
+
+                    // image path uses placeholder SVGs in ../assets/menu/
+                    const imgSrc = `../assets/menu/${it.id}.svg`;
+
+                    // Build item HTML based on whether the item has a `prices` map (size variants)
+                    if (it.prices) {
+                        // show radios for sizes
+                        const sizeInputs = Object.keys(it.prices).map((s, i) => {
+                            const checked = i === 0 ? 'checked' : '';
+                            return `<label class="size-label"><input type="radio" name="size-${it.id}" value="${s}" ${checked}> ${s}</label>`;
+                        }).join('');
+
+                        el.innerHTML = `
+                            <div class="mi-left">
+                                <img class="mi-img" src="${imgSrc}" alt="${it.name}" title="${it.name}" loading="lazy" onerror="this.onerror=null;this.src='../assets/menu/placeholder.svg'"/>
+                                <div class="mi-title">${it.name}</div>
+                                <div class="mi-desc">${it.description}</div>
+                            </div>
+                            <div class="mi-right">
+                                <div class="mi-price"></div>
+                                <div class="size-select" role="group" aria-label="Size select">${sizeInputs}</div>
+                                <button class="mi-add" data-id="${it.id}">Add</button>
+                            </div>
+                        `;
+                    } else {
+                        // single price item
+                        el.innerHTML = `
+                            <div class="mi-left">
+                                <img class="mi-img" src="${imgSrc}" alt="${it.name}" title="${it.name}" loading="lazy" onerror="this.onerror=null;this.src='../assets/menu/placeholder.svg'"/>
+                                <div class="mi-title">${it.name}</div>
+                                <div class="mi-desc">${it.description}</div>
+                            </div>
+                            <div class="mi-right">
+                                <div class="mi-price">P${Number(it.price).toFixed(0)}</div>
+                                <button class="mi-add" data-id="${it.id}">Add</button>
+                            </div>
+                        `;
+                    }
+
+                    list.appendChild(el);
+
+                    // If the item has size variants, wire price updates and sized add-to-cart
+                    if (it.prices) {
+                        const priceEl = el.querySelector('.mi-price');
+                        const radios = el.querySelectorAll(`input[name="size-${it.id}"]`);
+                        function updateDisplayedPrice() {
+                            const checked = el.querySelector(`input[name="size-${it.id}"]:checked`);
+                            const size = checked ? checked.value : Object.keys(it.prices)[0];
+                            const finalPrice = it.prices[size];
+                            priceEl.textContent = `P${Number(finalPrice).toFixed(0)}`;
+                        }
+                        radios.forEach(r => r.addEventListener('change', updateDisplayedPrice));
+                        updateDisplayedPrice();
+
+                        el.querySelector('.mi-add').addEventListener('click', () => {
+                            const checked = el.querySelector(`input[name="size-${it.id}"]:checked`);
+                            const size = checked ? checked.value : Object.keys(it.prices)[0];
+                            const finalPrice = it.prices[size];
+                            const itemToAdd = {
+                                id: `${it.id}_${size}`,
+                                baseId: it.id,
+                                name: it.name,
+                                description: it.description,
+                                size,
+                                price: finalPrice,
+                                image: imgSrc
+                            };
+                            MerakiCart.addToCart(itemToAdd);
+                            MerakiCart.updateCartDisplay();
+
+                            const toast = document.createElement('div');
+                            toast.textContent = `${it.name} (${size}) added to checkout.`;
+                            toast.style.position = 'fixed';
+                            toast.style.right = '1rem';
+                            toast.style.bottom = '1rem';
+                            toast.style.background = 'rgba(0,0,0,0.75)';
+                            toast.style.color = '#fff';
+                            toast.style.padding = '0.6rem 0.9rem';
+                            toast.style.borderRadius = '6px';
+                            toast.style.zIndex = 9999;
+                            document.body.appendChild(toast);
+                            setTimeout(() => toast.remove(), 1400);
+                        });
+                    } else {
+                        // single-price item add-to-cart
+                        el.querySelector('.mi-add').addEventListener('click', () => {
+                            const itemToAdd = {
+                                id: `${it.id}`,
+                                baseId: it.id,
+                                name: it.name,
+                                description: it.description,
+                                size: null,
+                                price: it.price,
+                                image: imgSrc
+                            };
+                            MerakiCart.addToCart(itemToAdd);
+                            MerakiCart.updateCartDisplay();
+
+                            const toast = document.createElement('div');
+                            toast.textContent = `${it.name} added to checkout.`;
+                            toast.style.position = 'fixed';
+                            toast.style.right = '1rem';
+                            toast.style.bottom = '1rem';
+                            toast.style.background = 'rgba(0,0,0,0.75)';
+                            toast.style.color = '#fff';
+                            toast.style.padding = '0.6rem 0.9rem';
+                            toast.style.borderRadius = '6px';
+                            toast.style.zIndex = 9999;
+                            document.body.appendChild(toast);
+                            setTimeout(() => toast.remove(), 1400);
+                        });
+                    }
+                });
+
+                if (filtered.length === 0) {
+                    const msg = document.createElement('div');
+                    msg.textContent = 'No items found for this category.';
+                    msg.style.padding = '.8rem';
+                    list.appendChild(msg);
+                }
+            }
+
+            // initial render (All)
+            renderList('all');
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <!-- Menu -> go back to Home -->
+            <button id="app-back" class="back-btn" aria-label="Go back" data-back="../index.html">← Back</button>
+
+            <div class="logo"><h1>☕ Meraki Sipside</h1></div>
+
+            <div id="cart-preview" class="cart-preview">
+                <a href="checkout.html">0 items • ₱0.00</a>
+            </div>
+
+            <div class="spacer"></div>
+        </div>
+
+        <nav class="navbar">
+            <ul class="nav-list">
+                <li><a class="nav-link" href="../index.html">Home</a></li>
+                <li><a class="nav-link" href="browse.html" aria-current="page">Menu</a></li>
+                <li><a class="nav-link" href="checkout.html">Checkout</a></li>
+                <!-- Booking removed -->
+            </ul>
+        </nav>
+    </header>
+
+    <main class="page-container">
+        <section class="menu-panel">
+            <div class="menu-header">
+                <h2>Menu</h2>
+            </div>
+            <div id="menu-list" class="menu-list"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Meraki Sipside. All rights reserved.</p>
+    </footer>
+</body>
+</html>

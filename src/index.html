@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Meraki Sipside</title>
+    <link rel="stylesheet" href="styles/style.css" />
+    <link rel="stylesheet" href="styles/home.css" />
+    <script src="scripts/app.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <!-- home: no back target (script will hide) -->
+            <button id="app-back" class="back-btn" aria-label="Go back" data-back="">← Back</button>
+
+            <div class="logo">
+                <h1>☕ Meraki Sipside</h1>
+            </div>
+
+            <div id="cart-preview" class="cart-preview">
+                <a href="pages/checkout.html">0 items • ₱0.00</a>
+            </div>
+
+            <div class="spacer"></div>
+        </div>
+
+        <!-- improved menu -->
+        <nav class="navbar">
+            <ul class="nav-list">
+                <li><a class="nav-link" href="index.html" aria-current="page">Home</a></li>
+                <li><a class="nav-link" href="pages/browse.html">Menu</a></li>
+                <li><a class="nav-link" href="pages/checkout.html">Checkout</a></li>
+                <!-- Booking removed -->
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h2>Discover Our Coffee</h2>
+                <p>At Meraki Sipside, we believe in crafting the perfect cup of coffee. Join us to explore our unique blends and cozy ambiance.</p>
+                <a href="pages/browse.html" class="cta-btn">Explore Menu</a>
+            </div>
+        </section>
+        <section class="info">
+            <div class="info-card">
+                <h3>🌿 Fresh Beans</h3>
+                <p>Sourced from the finest coffee farms around the world.</p>
+            </div>
+            <div class="info-card">
+                <h3>🎨 Artisan Crafted</h3>
+                <p>Every cup is prepared with passion and care.</p>
+            </div>
+            <div class="info-card">
+                <h3>☕ Premium Quality</h3>
+                <p>Experience the richness of specialty coffee.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Meraki Sipside. All rights reserved.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,223 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f5f1ed;
+}
+
+/* back button common styling */
+.back-btn {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: white;
+    padding: 0.45rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background 0.15s ease, transform 0.12s ease;
+}
+.back-btn[aria-hidden="true"] { visibility: hidden; }
+.back-btn:hover { background: rgba(255,255,255,0.22); transform: translateY(-1px); }
+
+/* header & menu */
+header {
+    background: linear-gradient(135deg, #6f4e37 0%, #8b5a3c 100%);
+    color: white;
+    padding: 0.6rem 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* center the logo */
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    position: relative; /* so back button can be positioned */
+}
+
+/* place back button at left edge of header-container */
+.back-btn {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Make the primary app back button visually match the Menu page
+   and override earlier generic .back-btn rules when present. */
+header .header-container #app-back.back-btn {
+    background: #fff; /* white pill like Menu */
+    color: #6f4e37; /* coffee-brown text */
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 0.45rem 0.8rem;
+    border-radius: 6px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    font-weight: 700;
+
+    /* Prevent page-level button rules from stretching this button */
+    width: auto !important;
+    display: inline-block !important;
+    min-width: 72px;
+    text-align: center;
+}
+
+/* Ensure the header area matches the Menu layout (centered logo and nav) */
+header .header-container {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+/* Keep the back button visually above the nav, with consistent positioning */
+header .header-container #app-back.back-btn {
+    z-index: 20;
+    left: 24px;
+}
+header .header-container #app-back.back-btn:hover {
+    background: #f6e7d9;
+    transform: translateY(-2px);
+}
+
+/* ensure nav stays centered below logo */
+.logo h1 { font-size: 1.35rem; letter-spacing: 0.6px; color: #fff; text-align: center; }
+
+/* nav */
+.navbar { background: transparent; margin-top: .35rem; }
+.nav-list { list-style: none; display: flex; gap: 0.6rem; justify-content: center; max-width: 1200px; margin: 0.3rem auto 0; padding: 0.4rem; }
+.nav-link {
+    display: inline-block; padding: 0.6rem 1rem; border-radius: 999px;
+    background: rgba(0,0,0,0.06); color: #fff; text-decoration: none; font-weight: 600;
+    transition: background 0.18s ease, transform 0.12s ease;
+}
+.nav-link:hover { background: rgba(255, 217, 153, 0.95); color: #6f4e37; transform: translateY(-2px); }
+.nav-link[aria-current="page"] { background: #ffd699; color: #6f4e37; box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+
+/* page container */
+.page-container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+
+/* menu and checkout basics */
+.menu-panel, .checkout-panel {
+    background: white; border-radius: 10px; padding: 1.5rem; box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+.menu-list { display: grid; gap: 1rem; margin-top: 1rem; }
+.menu-item {
+    display:flex;
+    gap:1rem;
+    align-items:center;
+    justify-content:space-between;
+    padding:0.9rem;
+    border-radius:8px;
+    background:#fff;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.03);
+}
+
+.mi-left {
+    display:flex;
+    gap:0.9rem;
+    align-items:center;
+    flex:1;
+}
+
+.mi-img {
+    width:110px;
+    height:110px;
+    object-fit:cover;
+    border-radius:8px;
+    background:#f4f1ee;
+    flex-shrink:0;
+}
+
+.mi-title { font-weight:800; color:#4a2f23; font-size:1.05rem; }
+.mi-desc { font-size:0.9rem; color:#716158; }
+
+.mi-right {
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:0.6rem;
+    min-width:150px;
+}
+
+/* price and buttons */
+.mi-price { font-weight:900; color:#6f4e37; font-size:1.05rem; }
+
+.size-select { display:flex; gap:0.4rem; }
+.size-label { background:#f5f5f5; padding:0.25rem 0.5rem; border-radius:6px; font-weight:700; cursor:pointer; border:1px solid #eee; }
+.size-label input { margin-right:6px; }
+
+/* add button */
+.mi-add {
+    background:#6f4e37;
+    color:#fff;
+    border:none;
+    padding:0.5rem 0.7rem;
+    border-radius:6px;
+    cursor:pointer;
+}
+.mi-add:hover { background:#8b5a3c; transform:translateY(-2px); }
+
+/* series nav pills — improved visible style */
+.series-nav { display:flex; gap:.6rem; justify-content:center; align-items:center; margin:1rem auto 0.6rem; max-width:1100px; padding:0.25rem; }
+.series-item { background:#fff; color:#4a2f23; padding:0.45rem 0.9rem; border-radius:999px; font-weight:700; border:2px solid #eee; box-shadow:0 2px 4px rgba(0,0,0,0.03); }
+.series-item.active { background:#ffd699; color:#6f4e37; border-color:rgba(111,78,55,0.6); box-shadow:0 10px 24px rgba(111,78,55,0.08); }
+
+/* header cart preview */
+.cart-preview {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.06);
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    font-weight: 600;
+}
+.cart-preview a {
+    color: #fff;
+    text-decoration: none;
+}
+.cart-preview a:hover {
+    color: #ffd699;
+}
+
+/* center footer text */
+footer p {
+    text-align: center;
+    margin: 0.6rem 0;
+    color: #6f4e37; /* keep matching site palette */
+}
+
+@media (max-width: 600px) {
+    .series-nav {
+        gap: .45rem;
+        padding: 0.4rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .series-item { white-space:nowrap; }
+}
+
+@media (max-width:720px) {
+    .cart-preview { right: .6rem; padding: .25rem .5rem; font-size: .9rem; }
+}
+
+@media (max-width:768px) {
+    .nav-list { gap:0.4rem; padding:0.6rem; overflow-x:auto; }
+    .header-container { padding:0 .6rem; }
+}
+
+@media (max-width:800px) {
+    .menu-item { flex-direction:column; align-items:flex-start; }
+    .mi-right { width:100%; align-items:stretch; flex-direction:row; justify-content:space-between; gap:0.8rem; }
+    .mi-img { width:100%; height:160px; border-radius:8px; }
+}

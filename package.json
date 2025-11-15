@@ -1,0 +1,21 @@
+{
+  "name": "meraki-sipside",
+  "version": "1.0.0",
+  "description": "A coffee shop website showcasing offerings, menu browsing, and checkout functionalities.",
+  "main": "src/index.html",
+  "scripts": {
+    "start": "live-server src",
+    "build": "echo 'Build process not defined yet.'"
+  },
+  "keywords": [
+    "coffee",
+    "shop",
+    "website",
+    "checkout"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "live-server": "^1.2.1"
+  }
+}

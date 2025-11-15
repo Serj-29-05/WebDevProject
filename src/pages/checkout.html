@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Checkout - Meraki Sipside</title>
+    <link rel="stylesheet" href="../styles/style.css" />
+    <link rel="stylesheet" href="../styles/checkout.css" />
+    <script src="../scripts/app.js" defer></script>
+    <script type="module">
+        import { getCartItems, removeFromCart, clearCart } from '../scripts/cart.js';
+
+        function formatPrice(n) {
+            return `₱${Number(n || 0).toFixed(2)}`;
+        }
+
+        function renderCheckout() {
+            const cartDisplay = document.getElementById('checkout-display');
+            if (!cartDisplay) return;
+            const items = getCartItems();
+            cartDisplay.innerHTML = '';
+
+            if (!items || items.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-msg';
+                empty.textContent = 'Your checkout is empty.';
+                cartDisplay.appendChild(empty);
+                return;
+            }
+
+            items.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'checkout-item';
+
+                const img = document.createElement('img');
+                img.className = 'checkout-thumb';
+                img.src = item.image || '../assets/menu/placeholder.svg';
+                img.alt = item.name;
+
+                const info = document.createElement('div');
+                info.className = 'item-info';
+                const title = document.createElement('div');
+                title.className = 'item-title';
+                title.textContent = item.name;
+                const meta = document.createElement('div');
+                meta.className = 'item-meta';
+                meta.textContent = item.size ? `Size: ${item.size}` : '';
+
+                info.appendChild(title);
+                info.appendChild(meta);
+
+                const controls = document.createElement('div');
+                controls.className = 'item-controls';
+                const price = document.createElement('div');
+                price.className = 'price';
+                price.textContent = formatPrice(item.price);
+                const rm = document.createElement('button');
+                rm.className = 'remove-btn';
+                rm.textContent = 'Remove';
+                rm.dataset.id = item.id;
+                rm.addEventListener('click', () => {
+                    removeFromCart(item.id);
+                    renderCheckout();
+                });
+
+                controls.appendChild(price);
+                controls.appendChild(rm);
+
+                row.appendChild(img);
+                row.appendChild(info);
+                row.appendChild(controls);
+
+                cartDisplay.appendChild(row);
+            });
+
+            const total = items.reduce((s, it) => s + Number(it.price || 0), 0);
+            const summary = document.getElementById('checkout-summary-total');
+            if (summary) summary.textContent = `Total: ${formatPrice(total)}`;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => renderCheckout());
+        // cart.js dispatches this event when cart changes
+        window.addEventListener('meraki:cart:changed', () => renderCheckout());
+    </script>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <!-- Checkout -> go back to Menu -->
+            <button id="app-back" class="back-btn" aria-label="Go back" data-back="browse.html">← Back</button>
+
+            <div class="logo"><h1>☕ Meraki Sipside</h1></div>
+
+            <div id="cart-preview" class="cart-preview">
+                <a href="checkout.html">0 items • ₱0.00</a>
+            </div>
+
+            <div class="spacer"></div>
+        </div>
+
+        <nav class="navbar">
+            <ul class="nav-list">
+                <li><a class="nav-link" href="../index.html">Home</a></li>
+                <li><a class="nav-link" href="browse.html">Menu</a></li>
+                <li><a class="nav-link" href="checkout.html" aria-current="page">Checkout</a></li>
+                <!-- Booking removed -->
+            </ul>
+        </nav>
+    </header>
+
+    <main class="page-container">
+        <section class="checkout-panel">
+            <h2>Your Checkout</h2>
+            <div class="checkout-grid">
+                <div id="checkout-display" class="checkout-display"></div>
+                <aside class="checkout-side">
+                    <div id="checkout-summary-total" class="checkout-summary-total">Total: ₱0.00</div>
+                    <div class="checkout-actions">
+                        <button class="btn secondary" onclick="MerakiCart.clearCart();">Clear Checkout</button>
+                        <button class="btn secondary" onclick="alert('Proceed to payment flow (not implemented)')">Proceed to Payment</button>
+                    </div>
+                </aside>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Meraki Sipside. All rights reserved.</p>
+    </footer>
+</body>
+</html>

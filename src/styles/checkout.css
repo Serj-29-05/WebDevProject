@@ -1,0 +1,60 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f8f8;
+    margin: 0;
+    padding: 0; /* keep header full width; panels keep their own padding */
+}
+.checkout-panel {
+    max-width: 920px;
+    margin: 1.2rem auto;
+    background: transparent;
+    padding: 0 1rem;
+}
+
+.checkout-display {
+    background: #fff;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 6px 18px rgba(34, 30, 24, 0.06);
+}
+
+.checkout-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f0eeee;
+}
+
+.checkout-thumb {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 8px;
+    background: #faf6f3;
+    flex-shrink: 0;
+}
+
+.item-info { flex: 1; }
+.item-title { font-weight: 700; color: #2f2f2f; }
+.item-meta { color: #777; font-size: 0.9rem; margin-top: 0.2rem; }
+
+.item-controls { display:flex; flex-direction:column; align-items:flex-end; gap:0.4rem; }
+.price { font-weight:700; color: #6b4b3a; }
+.remove-btn { background: transparent; border: 1px solid #f2dede; color:#bb2a2a; padding:6px 10px; border-radius:6px; cursor:pointer; }
+.remove-btn:hover { background:#fff6f6; }
+
+.checkout-total { text-align: right; font-size:1.1rem; font-weight:700; padding-top:0.8rem; color:#333; }
+
+.checkout-actions { display:flex; gap:0.6rem; margin-top:1rem; }
+.checkout-actions .btn.secondary { flex:1; }
+
+/* keep buttons consistent with site palette */
+.btn.secondary { background: #6f4c3e; color: #fff; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; }
+.btn.secondary:hover { background: #5b3e32; }
+
+/* small responsive tweaks */
+@media (max-width:600px) {
+    .checkout-thumb { width:56px; height:56px; }
+    .item-meta { font-size:0.85rem; }
+}
