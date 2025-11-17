@@ -89,19 +89,6 @@ header .header-container #app-back.back-btn:hover {
 }
 
 /* ensure nav stays centered below logo */
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    justify-content: center;
-}
-
-.header-logo {
-    width: 40px;
-    height: 40px;
-    object-fit: contain;
-}
-
 .logo h1 { font-size: 1.35rem; letter-spacing: 0.6px; color: #fff; text-align: center; }
 
 /* nav */
