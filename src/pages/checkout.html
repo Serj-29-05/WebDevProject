@@ -160,6 +160,9 @@
     </footer>
 
     <script>
+        // Configure where the payment server is hosted. For local dev it defaults to localhost.
+        // Set this to your deployed server URL (e.g., https://meraki-payments.onrender.com)
+        window.PAYMENTS_API_BASE = window.PAYMENTS_API_BASE || 'http://localhost:5175';
         // Payment Flow Logic
         const proceedBtn = document.getElementById('proceed-payment-btn');
         const paymentModal = document.getElementById('payment-modal');
@@ -182,7 +185,7 @@
         async function createGCashSource(amount) {
             // Call backend to create PayMongo GCash source; backend returns checkoutUrl
             try {
-                const resp = await fetch('http://localhost:5175/api/payments/gcash', {
+                const resp = await fetch(`${window.PAYMENTS_API_BASE}/api/payments/gcash`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ amount, description: `Meraki Order ${Date.now()}` })
@@ -213,6 +216,8 @@
             if (checkoutUrl) {
                 openGcashLink.href = checkoutUrl;
                 openGcashLink.textContent = 'Open in GCash';
+                // Try to auto-open the deep/universal link; the visible button remains as fallback.
+                try { window.location.href = checkoutUrl; } catch (_) {}
             } else {
                 openGcashLink.href = '#';
                 openGcashLink.textContent = 'Retry (GCash link failed)';
