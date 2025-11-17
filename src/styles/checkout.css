@@ -153,9 +153,6 @@ body {
     box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
 
-.api-hint { color:#777; font-size:0.8rem; margin: 0.25rem 0 0.75rem 0; word-break: break-all; }
-.payment-error { margin: 0.25rem 0 0.75rem 0; color:#b3261e; background:#fdecea; border:1px solid #f5c2c0; padding:8px 10px; border-radius:8px; font-size:0.9rem; }
-
 /* Thank You Screen Styles */
 .thank-you-screen {
     display: none;

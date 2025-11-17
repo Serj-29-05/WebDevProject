@@ -127,15 +127,12 @@
     <!-- GCash Payment Modal -->
     <div id="payment-modal" class="payment-modal">
         <div class="payment-modal-content">
-            <h2>Pay with GCash</h2>
-            <p class="payment-instructions">Tap the button below to open the GCash app with your total filled in. Complete the payment, then return and confirm.</p>
-            <div class="payment-amount" id="payment-amount">Total: ₱0.00</div>
-            <div class="api-hint">Using payments API: <span id="api-base-display"></span></div>
-            <div id="payment-error" class="payment-error" style="display:none"></div>
-            <a id="open-gcash-link" href="#" target="_blank" rel="noopener" class="btn primary" style="display:block;margin:0.5rem 0 1rem 0;">Open in GCash</a>
-            <div class="payment-help" style="font-size:.8rem;color:#666;line-height:1.2;">
-                If the app does not open automatically you may need to copy the link or ensure GCash is installed. Replace the configured payee info with your own number / merchant account for production.
+            <h2>Scan to Pay with GCash</h2>
+            <div class="qr-container">
+                <img src="../assets/gcash-qr.svg" alt="GCash QR Code" class="gcash-qr" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22 viewBox=%220 0 200 200%22%3E%3Crect width=%22200%22 height=%22200%22 fill=%22%23007bff%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2220%22 font-family=%22Arial%22%3EGCash QR%3C/text%3E%3C/svg%3E'" />
             </div>
+            <p class="payment-instructions">Scan this QR code with your GCash app to complete payment</p>
+            <div class="payment-amount" id="payment-amount">Total: ₱0.00</div>
             <div class="payment-modal-actions">
                 <button class="btn secondary" id="cancel-payment-btn">Cancel</button>
                 <button class="btn primary" id="confirm-payment-btn">I've Paid</button>
@@ -162,19 +159,6 @@
     </footer>
 
     <script>
-        // Configure where the payment server is hosted. For local dev it defaults to localhost.
-        // You can override via query: ?api=https://your-server.example.com
-        (function configureApiBase() {
-            const params = new URLSearchParams(window.location.search);
-            const apiParam = params.get('api');
-            const defaultBase = 'http://localhost:5175';
-            window.PAYMENTS_API_BASE = apiParam || window.PAYMENTS_API_BASE || defaultBase;
-            try {
-                const el = document.getElementById('api-base-display');
-                if (el) el.textContent = window.PAYMENTS_API_BASE;
-            } catch (e) {}
-            console.log('[Meraki] Payments API Base:', window.PAYMENTS_API_BASE);
-        })();
         // Payment Flow Logic
         const proceedBtn = document.getElementById('proceed-payment-btn');
         const paymentModal = document.getElementById('payment-modal');
@@ -182,45 +166,9 @@
         const cancelBtn = document.getElementById('cancel-payment-btn');
         const confirmBtn = document.getElementById('confirm-payment-btn');
         const paymentAmount = document.getElementById('payment-amount');
-        const openGcashLink = document.getElementById('open-gcash-link');
-
-        // Configuration for GCash payment link. Replace with real production values.
-        const GCASH_CONFIG = {
-            // Merchant GCash mobile number or account id
-            payee: '09171234567',
-            // Reference prefix for note / description
-            notePrefix: 'MerakiOrder',
-            // Fallback base (dummy). Replace with your actual payment page if you have a static QR link service.
-            webBase: 'https://payments.example.com/gcash'
-        };
-
-        async function createGCashSource(amount) {
-            // Call backend to create PayMongo GCash source; backend returns checkoutUrl
-            try {
-                const resp = await fetch(`${window.PAYMENTS_API_BASE}/api/payments/gcash`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ amount, description: `Meraki Order ${Date.now()}` })
-                });
-                const data = await resp.json().catch(() => ({}));
-                if (!resp.ok) {
-                    const errDetail = data?.error || resp.statusText || 'Unknown error';
-                    throw new Error(String(errDetail));
-                }
-                return data.checkoutUrl;
-            } catch (e) {
-                console.warn('GCash source creation error', e);
-                const errBox = document.getElementById('payment-error');
-                if (errBox) {
-                    errBox.textContent = `Payment link error: ${e.message}. Make sure the payment server is reachable and configured.`;
-                    errBox.style.display = 'block';
-                }
-                return null;
-            }
-        }
 
         // Show payment modal
-        proceedBtn.addEventListener('click', async () => {
+        proceedBtn.addEventListener('click', () => {
             const items = window.MerakiCart.getCartItems();
             if (!items || items.length === 0) {
                 alert('Your cart is empty. Please add items before proceeding.');
@@ -230,36 +178,7 @@
             paymentAmount.textContent = `Total: ₱${total.toFixed(2)}`;
             paymentModal.classList.add('show');
             document.body.style.overflow = 'hidden';
-            const errBox = document.getElementById('payment-error');
-            if (errBox) { errBox.textContent = ''; errBox.style.display = 'none'; }
-            openGcashLink.textContent = 'Preparing GCash...';
-            openGcashLink.classList.add('loading');
-            const checkoutUrl = await createGCashSource(total);
-            if (checkoutUrl) {
-                openGcashLink.href = checkoutUrl;
-                openGcashLink.textContent = 'Open in GCash';
-                // Try to auto-open the deep/universal link; the visible button remains as fallback.
-                try { window.location.href = checkoutUrl; } catch (_) {}
-            } else {
-                openGcashLink.href = '#';
-                openGcashLink.textContent = 'Retry (GCash link failed)';
-                openGcashLink.addEventListener('click', (e) => { e.preventDefault(); });
-            }
-            openGcashLink.classList.remove('loading');
         });
-        // On return from PayMongo redirect URLs, auto-show thank you or error.
-        (function handleReturnStatus() {
-            const params = new URLSearchParams(window.location.search);
-            const status = params.get('status');
-            if (status === 'success') {
-                thankYouScreen.classList.add('show');
-                try { window.MerakiCart.clearCart(); } catch (e) {}
-            } else if (status === 'failed') {
-                console.warn('Payment failed');
-                // Optionally surface a banner / message; lightweight alert for now.
-                setTimeout(() => alert('Payment failed or cancelled. Please try again.'), 250);
-            }
-        })();
 
         // Cancel payment
         cancelBtn.addEventListener('click', () => {
