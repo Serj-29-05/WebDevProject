@@ -130,6 +130,8 @@
             <h2>Pay with GCash</h2>
             <p class="payment-instructions">Tap the button below to open the GCash app with your total filled in. Complete the payment, then return and confirm.</p>
             <div class="payment-amount" id="payment-amount">Total: ₱0.00</div>
+            <div class="api-hint">Using payments API: <span id="api-base-display"></span></div>
+            <div id="payment-error" class="payment-error" style="display:none"></div>
             <a id="open-gcash-link" href="#" target="_blank" rel="noopener" class="btn primary" style="display:block;margin:0.5rem 0 1rem 0;">Open in GCash</a>
             <div class="payment-help" style="font-size:.8rem;color:#666;line-height:1.2;">
                 If the app does not open automatically you may need to copy the link or ensure GCash is installed. Replace the configured payee info with your own number / merchant account for production.
@@ -161,8 +163,18 @@
 
     <script>
         // Configure where the payment server is hosted. For local dev it defaults to localhost.
-        // Set this to your deployed server URL (e.g., https://meraki-payments.onrender.com)
-        window.PAYMENTS_API_BASE = window.PAYMENTS_API_BASE || 'http://localhost:5175';
+        // You can override via query: ?api=https://your-server.example.com
+        (function configureApiBase() {
+            const params = new URLSearchParams(window.location.search);
+            const apiParam = params.get('api');
+            const defaultBase = 'http://localhost:5175';
+            window.PAYMENTS_API_BASE = apiParam || window.PAYMENTS_API_BASE || defaultBase;
+            try {
+                const el = document.getElementById('api-base-display');
+                if (el) el.textContent = window.PAYMENTS_API_BASE;
+            } catch (e) {}
+            console.log('[Meraki] Payments API Base:', window.PAYMENTS_API_BASE);
+        })();
         // Payment Flow Logic
         const proceedBtn = document.getElementById('proceed-payment-btn');
         const paymentModal = document.getElementById('payment-modal');
@@ -190,11 +202,19 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ amount, description: `Meraki Order ${Date.now()}` })
                 });
-                if (!resp.ok) throw new Error('Failed creating source');
-                const data = await resp.json();
+                const data = await resp.json().catch(() => ({}));
+                if (!resp.ok) {
+                    const errDetail = data?.error || resp.statusText || 'Unknown error';
+                    throw new Error(String(errDetail));
+                }
                 return data.checkoutUrl;
             } catch (e) {
                 console.warn('GCash source creation error', e);
+                const errBox = document.getElementById('payment-error');
+                if (errBox) {
+                    errBox.textContent = `Payment link error: ${e.message}. Make sure the payment server is reachable and configured.`;
+                    errBox.style.display = 'block';
+                }
                 return null;
             }
         }
@@ -210,6 +230,8 @@
             paymentAmount.textContent = `Total: ₱${total.toFixed(2)}`;
             paymentModal.classList.add('show');
             document.body.style.overflow = 'hidden';
+            const errBox = document.getElementById('payment-error');
+            if (errBox) { errBox.textContent = ''; errBox.style.display = 'none'; }
             openGcashLink.textContent = 'Preparing GCash...';
             openGcashLink.classList.add('loading');
             const checkoutUrl = await createGCashSource(total);
@@ -221,6 +243,7 @@
             } else {
                 openGcashLink.href = '#';
                 openGcashLink.textContent = 'Retry (GCash link failed)';
+                openGcashLink.addEventListener('click', (e) => { e.preventDefault(); });
             }
             openGcashLink.classList.remove('loading');
         });
