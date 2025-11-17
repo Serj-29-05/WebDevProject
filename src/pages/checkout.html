@@ -179,23 +179,25 @@
             webBase: 'https://payments.example.com/gcash'
         };
 
-        function buildGCashLink(amount) {
-            // Format amount
-            const amt = amount.toFixed(2);
-            // Attempt a universal deep link wrapper pattern (user must adjust to a valid merchant payment URL).
-            // Provide two candidate URLs: a hypothetical web redirect and a custom scheme fallback.
-            const note = encodeURIComponent(`${GCASH_CONFIG.notePrefix}-${Date.now()}`);
-            const payee = encodeURIComponent(GCASH_CONFIG.payee);
-            // Hypothetical hosted payment page (replace with real one)
-            const webLink = `${GCASH_CONFIG.webBase}?account=${payee}&amount=${amt}&note=${note}`;
-            // Potential app scheme (may not work unless GCash registers this exact scheme on the device)
-            const schemeLink = `gcash://pay?account=${payee}&amount=${amt}&note=${note}`;
-            // We default to webLink; user can implement server side to auto open app or show official QR.
-            return webLink;
+        async function createGCashSource(amount) {
+            // Call backend to create PayMongo GCash source; backend returns checkoutUrl
+            try {
+                const resp = await fetch('http://localhost:5175/api/payments/gcash', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount, description: `Meraki Order ${Date.now()}` })
+                });
+                if (!resp.ok) throw new Error('Failed creating source');
+                const data = await resp.json();
+                return data.checkoutUrl;
+            } catch (e) {
+                console.warn('GCash source creation error', e);
+                return null;
+            }
         }
 
         // Show payment modal
-        proceedBtn.addEventListener('click', () => {
+        proceedBtn.addEventListener('click', async () => {
             const items = window.MerakiCart.getCartItems();
             if (!items || items.length === 0) {
                 alert('Your cart is empty. Please add items before proceeding.');
@@ -203,12 +205,33 @@
             }
             const total = items.reduce((s, it) => s + Number(it.price || 0), 0);
             paymentAmount.textContent = `Total: ₱${total.toFixed(2)}`;
-            // Build dynamic link each time so amount is accurate.
-            const link = buildGCashLink(total);
-            openGcashLink.href = link;
             paymentModal.classList.add('show');
             document.body.style.overflow = 'hidden';
+            openGcashLink.textContent = 'Preparing GCash...';
+            openGcashLink.classList.add('loading');
+            const checkoutUrl = await createGCashSource(total);
+            if (checkoutUrl) {
+                openGcashLink.href = checkoutUrl;
+                openGcashLink.textContent = 'Open in GCash';
+            } else {
+                openGcashLink.href = '#';
+                openGcashLink.textContent = 'Retry (GCash link failed)';
+            }
+            openGcashLink.classList.remove('loading');
         });
+        // On return from PayMongo redirect URLs, auto-show thank you or error.
+        (function handleReturnStatus() {
+            const params = new URLSearchParams(window.location.search);
+            const status = params.get('status');
+            if (status === 'success') {
+                thankYouScreen.classList.add('show');
+                try { window.MerakiCart.clearCart(); } catch (e) {}
+            } else if (status === 'failed') {
+                console.warn('Payment failed');
+                // Optionally surface a banner / message; lightweight alert for now.
+                setTimeout(() => alert('Payment failed or cancelled. Please try again.'), 250);
+            }
+        })();
 
         // Cancel payment
         cancelBtn.addEventListener('click', () => {
