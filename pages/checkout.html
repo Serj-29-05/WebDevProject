@@ -117,15 +117,90 @@
                     <div id="checkout-summary-total" class="checkout-summary-total">Total: ₱0.00</div>
                     <div class="checkout-actions">
                         <button class="btn secondary" onclick="MerakiCart.clearCart();">Clear Checkout</button>
-                        <button class="btn secondary" onclick="alert('Proceed to payment flow (not implemented)')">Proceed to Payment</button>
+                        <button class="btn secondary" id="proceed-payment-btn">Proceed to Payment</button>
                     </div>
                 </aside>
             </div>
         </section>
     </main>
 
+    <!-- GCash Payment Modal -->
+    <div id="payment-modal" class="payment-modal">
+        <div class="payment-modal-content">
+            <h2>Scan to Pay with GCash</h2>
+            <div class="qr-container">
+                <img src="../assets/gcash-qr.svg" alt="GCash QR Code" class="gcash-qr" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22 viewBox=%220 0 200 200%22%3E%3Crect width=%22200%22 height=%22200%22 fill=%22%23007bff%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2220%22 font-family=%22Arial%22%3EGCash QR%3C/text%3E%3C/svg%3E'" />
+            </div>
+            <p class="payment-instructions">Scan this QR code with your GCash app to complete payment</p>
+            <div class="payment-amount" id="payment-amount">Total: ₱0.00</div>
+            <div class="payment-modal-actions">
+                <button class="btn secondary" id="cancel-payment-btn">Cancel</button>
+                <button class="btn primary" id="confirm-payment-btn">I've Paid</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thank You Screen -->
+    <div id="thank-you-screen" class="thank-you-screen">
+        <div class="thank-you-content">
+            <div class="success-icon">✓</div>
+            <h1>Thank You!</h1>
+            <p class="thank-you-message">Your payment has been received successfully.</p>
+            <p class="order-info">Order confirmation has been sent to your email.</p>
+            <div class="thank-you-actions">
+                <button class="btn primary" onclick="window.location.href='browse.html'">Continue Shopping</button>
+                <button class="btn secondary" onclick="window.location.href='../index.html'">Back to Home</button>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <p>&copy; 2025 Meraki Sipside. All rights reserved.</p>
     </footer>
+
+    <script>
+        // Payment Flow Logic
+        const proceedBtn = document.getElementById('proceed-payment-btn');
+        const paymentModal = document.getElementById('payment-modal');
+        const thankYouScreen = document.getElementById('thank-you-screen');
+        const cancelBtn = document.getElementById('cancel-payment-btn');
+        const confirmBtn = document.getElementById('confirm-payment-btn');
+        const paymentAmount = document.getElementById('payment-amount');
+
+        // Show payment modal
+        proceedBtn.addEventListener('click', () => {
+            const items = window.MerakiCart.getCartItems();
+            if (!items || items.length === 0) {
+                alert('Your cart is empty. Please add items before proceeding.');
+                return;
+            }
+            const total = items.reduce((s, it) => s + Number(it.price || 0), 0);
+            paymentAmount.textContent = `Total: ₱${total.toFixed(2)}`;
+            paymentModal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        });
+
+        // Cancel payment
+        cancelBtn.addEventListener('click', () => {
+            paymentModal.classList.remove('show');
+            document.body.style.overflow = '';
+        });
+
+        // Confirm payment and show thank you
+        confirmBtn.addEventListener('click', () => {
+            paymentModal.classList.remove('show');
+            thankYouScreen.classList.add('show');
+            // Clear cart after successful payment
+            window.MerakiCart.clearCart();
+        });
+
+        // Close modal when clicking outside
+        paymentModal.addEventListener('click', (e) => {
+            if (e.target === paymentModal) {
+                paymentModal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        });
+    </script>
 </body>
 </html>
