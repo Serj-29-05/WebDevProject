@@ -89,10 +89,13 @@
             <!-- Checkout -> go back to Menu -->
             <button id="app-back" class="back-btn" aria-label="Go back" data-back="browse.html">← Back</button>
 
-            <div class="logo"><h1>☕ Meraki Sipside</h1></div>
+            <div class="logo">
+                <img src="../assets/logo/meraki2.png" alt="Meraki Sipside logo" class="logo-mark" />
+                <h1>Meraki Sipside</h1>
+            </div>
 
             <div id="cart-preview" class="cart-preview">
-                <a href="checkout.html">0 items • ₱0.00</a>
+                <button type="button" id="cart-preview-btn" class="cart-preview-btn">0 items • ₱0.00</button>
             </div>
 
             <div class="spacer"></div>
@@ -107,6 +110,36 @@
             </ul>
         </nav>
     </header>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="cart-modal" role="dialog" aria-modal="true" aria-labelledby="cart-modal-title" aria-hidden="true">
+        <div class="cart-modal-overlay"></div>
+        <div class="cart-modal-content">
+            <div class="cart-modal-header">
+                <h2 id="cart-modal-title">Your Cart</h2>
+                <button type="button" class="cart-modal-close" aria-label="Close cart">&times;</button>
+            </div>
+            <div class="cart-modal-body">
+                <div id="cart-items-list" class="cart-items-list">
+                    <!-- Cart items will be dynamically inserted here -->
+                </div>
+                <div class="cart-empty-message" style="display:none;">
+                    <p>Your cart is empty</p>
+                    <p class="cart-empty-subtext">Add some delicious items from our menu!</p>
+                </div>
+            </div>
+            <div class="cart-modal-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span id="cart-modal-total" class="cart-total-amount">₱0.00</span>
+                </div>
+                <div class="cart-modal-actions">
+                    <button type="button" class="cart-continue-btn">Continue Shopping</button>
+                    <a href="checkout.html" class="cart-checkout-btn">Checkout</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <main class="page-container">
         <section class="checkout-panel">

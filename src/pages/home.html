@@ -6,23 +6,47 @@
     <title>Meraki Sipside - Home</title>
     <link rel="stylesheet" href="../styles/style.css">
     <link rel="stylesheet" href="../styles/home.css">
-</head>
-<body>
     <header>
-        <h1>Welcome to Meraki Sipside</h1>
-        <nav>
-            <ul>
-                <li><a href="../index.html">Home</a></li>
-                <li><a href="browse.html">Browse Menu</a></li>
-                <li><a href="checkout.html">Checkout</a></li>
-                <!-- Booking removed -->
+        <div class="header-container">
+            <button id="app-back" class="back-btn" aria-label="Go back" data-back="../index.html">← Back</button>
+
+            <div class="logo">
+                <img src="../assets/logo/meraki2.png" alt="Meraki Sipside logo" class="logo-mark" />
+                <h1>Meraki Sipside</h1>
+            </div>
+
+            <div id="cart-preview" class="cart-preview">
+                <a href="checkout.html">0 items • ₱0.00</a>
+            </div>
+
+            <div class="spacer"></div>
+        </div>
+
+        <nav class="navbar">
+            <ul class="nav-list">
+                <li><a class="nav-link" href="../index.html" aria-current="page">Home</a></li>
+                <li><a class="nav-link" href="browse.html">Menu</a></li>
+                <li><a class="nav-link" href="checkout.html">Checkout</a></li>
             </ul>
+        </nav>
+    </header>
         </nav>
     </header>
     <main>
         <section class="hero">
             <h2>Experience the Best Coffee in Town</h2>
             <p>Join us for a cozy atmosphere and delicious brews.</p>
+        </section>
+        <section class="best-seller">
+            <h3>Best Seller</h3>
+            <div class="product-card">
+                <img src="../assets/menu/m1.svg" alt="Best Seller Coffee">
+                <div class="product-info">
+                    <h4>Caramel Latte</h4>
+                    <p class="price">$4.50</p>
+                    <button class="add-cart" data-id="best-1">Add to Cart</button>
+                </div>
+            </div>
         </section>
         <section class="offerings">
             <h3>Our Offerings</h3>

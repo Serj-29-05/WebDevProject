@@ -1,14 +1,44 @@
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f8f8f8;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #fef9f3 0%, #f4e3ce 50%, #fef5eb 100%);
+    background-attachment: fixed;
     margin: 0;
-    padding: 0; /* keep header full width; panels keep their own padding */
+    padding: 0;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 25% 30%, rgba(139, 90, 60, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 75% 70%, rgba(205, 133, 63, 0.06) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+    animation: checkoutGradientPulse 20s ease-in-out infinite;
+}
+
+@keyframes checkoutGradientPulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+    50% {
+        opacity: 0.9;
+        transform: scale(1.05) rotate(1deg);
+    }
 }
 .checkout-panel {
     max-width: 920px;
     margin: 1.2rem auto;
-    background: transparent;
-    padding: 0 1rem;
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
 }
 
 .checkout-display {
@@ -16,6 +46,25 @@ body {
     border-radius: 10px;
     padding: 1rem;
     box-shadow: 0 6px 18px rgba(34, 30, 24, 0.06);
+    position: relative;
+}
+
+.checkout-display::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, rgba(255, 214, 153, 0.3), rgba(111, 78, 55, 0.2));
+    border-radius: 10px;
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.3s ease;
+}
+
+.checkout-display:hover::before {
+    opacity: 1;
 }
 
 .checkout-item {
@@ -24,6 +73,31 @@ body {
     gap: 1rem;
     padding: 0.75rem 0;
     border-bottom: 1px solid #f0eeee;
+    transition: all 0.3s cubic-bezier(.2,.9,.3,1);
+    position: relative;
+}
+
+.checkout-item::before {
+    content: '';
+    position: absolute;
+    left: -1rem;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, #ffd699, #8b5a3c);
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.checkout-item:hover {
+    transform: translateX(8px);
+    background: rgba(255, 214, 153, 0.05);
+    border-radius: 8px;
+}
+
+.checkout-item:hover::before {
+    opacity: 1;
 }
 
 .checkout-thumb {
@@ -41,8 +115,21 @@ body {
 
 .item-controls { display:flex; flex-direction:column; align-items:flex-end; gap:0.4rem; }
 .price { font-weight:700; color: #6b4b3a; }
-.remove-btn { background: transparent; border: 1px solid #f2dede; color:#bb2a2a; padding:6px 10px; border-radius:6px; cursor:pointer; }
-.remove-btn:hover { background:#fff6f6; }
+.remove-btn { 
+    background: transparent; 
+    border: 1px solid #f2dede; 
+    color:#bb2a2a; 
+    padding:6px 10px; 
+    border-radius:6px; 
+    cursor:pointer;
+    transition: all 0.25s cubic-bezier(.2,.9,.3,1);
+}
+
+.remove-btn:hover { 
+    background:#fff6f6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(187, 42, 42, 0.2);
+}
 
 .checkout-total { text-align: right; font-size:1.1rem; font-weight:700; padding-top:0.8rem; color:#333; }
 
@@ -50,8 +137,21 @@ body {
 .checkout-actions .btn.secondary { flex:1; }
 
 /* keep buttons consistent with site palette */
-.btn.secondary { background: #6f4c3e; color: #fff; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; }
-.btn.secondary:hover { background: #5b3e32; }
+.btn.secondary { 
+    background: #6f4c3e; 
+    color: #fff; 
+    border: none; 
+    padding: 10px 14px; 
+    border-radius: 8px; 
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(.2,.9,.3,1);
+}
+
+.btn.secondary:hover { 
+    background: #5b3e32;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(111, 76, 62, 0.3);
+}
 
 /* small responsive tweaks */
 @media (max-width:600px) {

@@ -5,7 +5,9 @@
   "main": "src/index.html",
   "scripts": {
     "start": "live-server src",
-    "build": "echo 'Build process not defined yet.'"
+    "build": "echo 'Build process not defined yet.'",
+    "lint": "eslint src --ext .js",
+    "lint:fix": "eslint src --ext .js --fix"
   },
   "keywords": [
     "coffee",
