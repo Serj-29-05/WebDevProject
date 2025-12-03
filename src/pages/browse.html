@@ -140,8 +140,7 @@
                 if (modalItem.prices) {
                     const size = getModalSelectedSize() || Object.keys(modalItem.prices)[0];
                     const price = modalItem.prices[size];
-                    const label = sizeDisplayMap[size] || size;
-                    modalPrice.textContent = `Price (${label}): ₱${Number(price).toFixed(0)}`;
+                    modalPrice.textContent = `Price: ₱${Number(price).toFixed(0)}`;
                 } else {
                     modalPrice.textContent = `Price: ₱${Number(modalItem.price || 0).toFixed(0)}`;
                 }
@@ -310,8 +309,7 @@
 
                         function updateDisplayedPrice() {
                             const size = getCardSize();
-                            const label = sizeDisplayMap[size] || size;
-                            priceEl.textContent = `${label}: P${Number(it.prices[size]).toFixed(0)}`;
+                            priceEl.textContent = `P${Number(it.prices[size]).toFixed(0)}`;
                         }
 
                         radios.forEach(r => r.addEventListener('change', updateDisplayedPrice));
