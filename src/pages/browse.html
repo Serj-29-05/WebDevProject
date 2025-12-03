@@ -14,14 +14,14 @@
         // render items and wire add-to-checkout + category filtering + size handling
         document.addEventListener('DOMContentLoaded', () => {
             const items = [
-                { id: 'm1', name: 'Bubble Tea', prices: { G: 39, V: 49 }, description: 'Classic milktea with chewy tapioca pearls', category: 'Milktea' },
-                { id: 'm2', name: 'Cookies & Cream', prices: { G: 39, V: 49 }, description: 'Creamy milktea with crushed cookies', category: 'Milktea' },
-                { id: 'm3', name: 'Choco Hokkaido', prices: { G: 39, V: 49 }, description: 'Rich chocolate Hokkaido cream flavor', category: 'Milktea' },
-                { id: 'm4', name: 'Matcha', prices: { G: 39, V: 49 }, description: 'Premium Japanese green tea milktea', category: 'Milktea' },
-                { id: 'm5', name: 'Winter Melon', prices: { G: 39, V: 49 }, description: 'Sweet and refreshing winter melon', category: 'Milktea' },
-                { id: 'm6', name: 'Okinawa', prices: { G: 39, V: 49 }, description: 'Brown sugar specialty from Okinawa', category: 'Milktea' },
-                { id: 'm7', name: 'Red Velvet', prices: { G: 39, V: 49 }, description: 'Velvety smooth red velvet flavor', category: 'Milktea' },
-                { id: 'm8', name: 'Chocolate', prices: { G: 39, V: 49 }, description: 'Classic rich chocolate milktea', category: 'Milktea' },
+                { id: 'm1', name: 'Bubble Tea', prices: { Grande: 39, Venti: 49 }, description: 'Classic milktea with chewy tapioca pearls', category: 'Milktea' },
+                { id: 'm2', name: 'Cookies & Cream', prices: { Grande: 39, Venti: 49 }, description: 'Creamy milktea with crushed cookies', category: 'Milktea' },
+                { id: 'm3', name: 'Choco Hokkaido', prices: { Grande: 39, Venti: 49 }, description: 'Rich chocolate Hokkaido cream flavor', category: 'Milktea' },
+                { id: 'm4', name: 'Matcha', prices: { Grande: 39, Venti: 49 }, description: 'Premium Japanese green tea milktea', category: 'Milktea' },
+                { id: 'm5', name: 'Winter Melon', prices: { Grande: 39, Venti: 49 }, description: 'Sweet and refreshing winter melon', category: 'Milktea' },
+                { id: 'm6', name: 'Okinawa', prices: { Grande: 39, Venti: 49 }, description: 'Brown sugar specialty from Okinawa', category: 'Milktea' },
+                { id: 'm7', name: 'Red Velvet', prices: { Grande: 39, Venti: 49 }, description: 'Velvety smooth red velvet flavor', category: 'Milktea' },
+                { id: 'm8', name: 'Chocolate', prices: { Grande: 39, Venti: 49 }, description: 'Classic rich chocolate milktea', category: 'Milktea' },
                
                 { id: 'ic1', name: 'Spanish Latte', price: 49, description: 'Creamy and sweet coffee with condensed milk', category: 'Iced Coffee' },
                 { id: 'ic2', name: 'French Vanilla', price: 49, description: 'Smooth vanilla-infused coffee', category: 'Iced Coffee' },
@@ -30,11 +30,11 @@
                 { id: 'ic5', name: 'Matcha', price: 49, description: 'Green tea latte with a coffee twist', category: 'Iced Coffee' },
                 { id: 'ic6', name: 'Hazelnut', price: 49, description: 'Nutty hazelnut coffee delight', category: 'Iced Coffee' },
                
-                { id: 'ch1', name: 'Oreo Matcha', prices: { G: 59, V: 69 }, description: 'Matcha cheesecake with oreo crumbles', category: 'Cheesecake' },
-                { id: 'ch2', name: 'Red Velvet', prices: { G: 59, V: 69 }, description: 'Smooth red velvet cheesecake', category: 'Cheesecake' },
-                { id: 'ch3', name: 'Oreolicious', prices: { G: 59, V: 69 }, description: 'Loaded with crushed oreo cookies', category: 'Cheesecake' },
-                { id: 'ch4', name: 'Creamy Cheesecake', prices: { G: 59, V: 69 }, description: 'Classic New York style cheesecake', category: 'Cheesecake' },
-                { id: 'ch5', name: 'Choco Delight', prices: { G: 59, V: 69 }, description: 'Decadent chocolate cheesecake', category: 'Cheesecake' },
+                { id: 'ch1', name: 'Oreo Matcha', prices: { Grande: 59, Venti: 69 }, description: 'Matcha cheesecake with oreo crumbles', category: 'Cheesecake' },
+                { id: 'ch2', name: 'Red Velvet', prices: { Grande: 59, Venti: 69 }, description: 'Smooth red velvet cheesecake', category: 'Cheesecake' },
+                { id: 'ch3', name: 'Oreolicious', prices: { Grande: 59, Venti: 69 }, description: 'Loaded with crushed oreo cookies', category: 'Cheesecake' },
+                { id: 'ch4', name: 'Creamy Cheesecake', prices: { Grande: 59, Venti: 69 }, description: 'Classic New York style cheesecake', category: 'Cheesecake' },
+                { id: 'ch5', name: 'Choco Delight', prices: { Grande: 59, Venti: 69 }, description: 'Decadent chocolate cheesecake', category: 'Cheesecake' },
                 
                 { id: 'ft1', name: 'Lychee', price: 49, description: 'Sweet and fragrant lychee tea', category: 'Fruit Tea' },
                 { id: 'ft2', name: 'Orange', price: 49, description: 'Refreshing citrus orange tea', category: 'Fruit Tea' },
@@ -44,12 +44,12 @@
                 { id: 'ft6', name: 'Strawberry', price: 49, description: 'Sweet strawberry fruit tea', category: 'Fruit Tea' },
                 { id: 'ft7', name: 'Passion Fruit', price: 49, description: 'Tropical passion fruit tea', category: 'Fruit Tea' },
                
-                { id: 's1', name: 'Green Sparkle', prices: { G: 49, V: 59 }, description: 'Refreshing lime soda sparkler', category: 'Soda' },
-                { id: 's2', name: 'Blueberry Cloud', prices: { G: 49, V: 59 }, description: 'Blueberry soda with creamy clouds', category: 'Soda' },
-                { id: 's3', name: 'Lychee Soda', prices: { G: 49, V: 59 }, description: 'Sweet lychee sparkling soda', category: 'Soda' },
-                { id: 's4', name: 'Strawberry Burst', prices: { G: 49, V: 59 }, description: 'Berry explosion in every sip', category: 'Soda' },
-                { id: 's5', name: 'Blue Lagoon', prices: { G: 49, V: 59 }, description: 'Tropical blue curacao soda', category: 'Soda' },
-                { id: 's6', name: 'Sparkling Apple', prices: { G: 49, V: 59 }, description: 'Crisp sparkling apple soda', category: 'Soda' },
+                { id: 's1', name: 'Green Sparkle', prices: { Grande: 49, Venti: 59 }, description: 'Refreshing lime soda sparkler', category: 'Soda' },
+                { id: 's2', name: 'Blueberry Cloud', prices: { Grande: 49, Venti: 59 }, description: 'Blueberry soda with creamy clouds', category: 'Soda' },
+                { id: 's3', name: 'Lychee Soda', prices: { Grande: 49, Venti: 59 }, description: 'Sweet lychee sparkling soda', category: 'Soda' },
+                { id: 's4', name: 'Strawberry Burst', prices: { Grande: 49, Venti: 59 }, description: 'Berry explosion in every sip', category: 'Soda' },
+                { id: 's5', name: 'Blue Lagoon', prices: { Grande: 49, Venti: 59 }, description: 'Tropical blue curacao soda', category: 'Soda' },
+                { id: 's6', name: 'Sparkling Apple', prices: { Grande: 49, Venti: 59 }, description: 'Crisp sparkling apple soda', category: 'Soda' },
                 
                 { id: 'frp1', name: 'Oreo Java Chip', price: 79, description: 'Coffee frappe with oreo and chocolate chips', category: 'Frappe' },
                 { id: 'frp2', name: 'Mango', price: 79, description: 'Tropical mango blended frappe', category: 'Frappe' },
@@ -75,6 +75,11 @@
                 { id: 'fries3', name: 'BBQ Fries', prices: { R: 45, M: 65, L: 95 }, description: 'BBQ seasoned crispy fries', category: 'Fries' },
                 { id: 'fries4', name: 'Overload Cheezy', price: 75, description: 'Extra cheesy fully loaded fries', category: 'Fries' }
             ];
+
+            const sizeDisplayMap = {
+                Grande: 'Grande (16 oz)',
+                Venti: 'Venti (20 oz)'
+            };
 
             const placeholderImg = '../assets/menu/placeholder.svg';
             const itemModal = document.getElementById('item-modal');
@@ -109,18 +114,20 @@
                 const image = `../assets/menu/${item.id}.svg`;
                 const actualSize = item.prices ? (size || Object.keys(item.prices)[0]) : null;
                 const price = item.prices ? item.prices[actualSize] : item.price;
+                const displaySize = actualSize ? (sizeDisplayMap[actualSize] || actualSize) : null;
                 const cartItem = {
                     id: item.prices ? `${item.id}_${actualSize}` : item.id,
                     baseId: item.id,
                     name: item.name,
                     description: item.description,
-                    size: actualSize,
+                    size: displaySize,
                     price,
                     image
                 };
                 MerakiCart.addToCart(cartItem);
                 MerakiCart.updateCartDisplay();
-                showToast(`${item.name}${actualSize ? ` (${actualSize})` : ''} added to checkout.`);
+                const sizeSuffix = displaySize ? ` (${displaySize})` : '';
+                showToast(`${item.name}${sizeSuffix} added to checkout.`);
             }
 
             function getModalSelectedSize() {
@@ -133,7 +140,8 @@
                 if (modalItem.prices) {
                     const size = getModalSelectedSize() || Object.keys(modalItem.prices)[0];
                     const price = modalItem.prices[size];
-                    modalPrice.textContent = `Price: ₱${Number(price).toFixed(0)}`;
+                    const label = sizeDisplayMap[size] || size;
+                    modalPrice.textContent = `Price (${label}): ₱${Number(price).toFixed(0)}`;
                 } else {
                     modalPrice.textContent = `Price: ₱${Number(modalItem.price || 0).toFixed(0)}`;
                 }
@@ -156,12 +164,14 @@
                 if (item.prices) {
                     const sizes = Object.keys(item.prices);
                     const initialSize = presetSize && sizes.includes(presetSize) ? presetSize : sizes[0];
-                    modalSize.innerHTML = sizes.map(size => `
+                    modalSize.innerHTML = sizes.map(size => {
+                        const label = sizeDisplayMap[size] || size;
+                        return `
                         <label class="size-label modal-size-label">
                             <input type="radio" name="modal-size" value="${size}" ${size === initialSize ? 'checked' : ''}>
-                            ${size}
+                            ${label}
                         </label>
-                    `).join('');
+                    `;}).join('');
                     modalSize.dataset.hasSizes = 'true';
                     modalSize.querySelectorAll('input[name="modal-size"]').forEach(input => {
                         input.addEventListener('change', updateModalPrice);
@@ -249,7 +259,8 @@
                     if (it.prices) {
                         const sizeInputs = Object.keys(it.prices).map((s, i) => {
                             const checked = i === 0 ? 'checked' : '';
-                            return `<label class="size-label"><input type="radio" name="size-${it.id}" value="${s}" ${checked}> ${s}</label>`;
+                            const label = sizeDisplayMap[s] || s;
+                            return `<label class="size-label"><input type="radio" name="size-${it.id}" value="${s}" ${checked}> ${label}</label>`;
                         }).join('');
 
                         el.innerHTML = `
@@ -299,7 +310,8 @@
 
                         function updateDisplayedPrice() {
                             const size = getCardSize();
-                            priceEl.textContent = `P${Number(it.prices[size]).toFixed(0)}`;
+                            const label = sizeDisplayMap[size] || size;
+                            priceEl.textContent = `${label}: P${Number(it.prices[size]).toFixed(0)}`;
                         }
 
                         radios.forEach(r => r.addEventListener('change', updateDisplayedPrice));
