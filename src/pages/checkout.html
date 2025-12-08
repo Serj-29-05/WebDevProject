@@ -14,6 +14,16 @@
             return `₱${Number(n || 0).toFixed(2)}`;
         }
 
+        const checkoutPlaceholderImg = '../assets/menu/placeholder.jfif';
+
+        const getImagePath = (id) => id ? `../assets/menu/${id}.jpg` : null;
+
+        const extractBaseId = (item) => {
+            const source = item?.baseId || item?.id || '';
+            const text = String(source);
+            return text.includes('_') ? text.split('_')[0] : text;
+        };
+
         function renderCheckout() {
             const cartDisplay = document.getElementById('checkout-display');
             if (!cartDisplay) return;
@@ -23,7 +33,12 @@
             if (!items || items.length === 0) {
                 const empty = document.createElement('div');
                 empty.className = 'empty-msg';
-                empty.textContent = 'Your checkout is empty.';
+                empty.innerHTML = `
+                    <div class="empty-icon">🛒</div>
+                    <h3>Your cart is empty</h3>
+                    <p>Add some delicious items from our menu to get started!</p>
+                    <a href="browse.html" class="browse-menu-btn">Browse Menu</a>
+                `;
                 cartDisplay.appendChild(empty);
                 return;
             }
@@ -34,8 +49,15 @@
 
                 const img = document.createElement('img');
                 img.className = 'checkout-thumb';
-                img.src = item.image || '../assets/menu/placeholder.svg';
                 img.alt = item.name;
+
+                const baseId = extractBaseId(item);
+                const resolvedSrc = baseId ? getImagePath(baseId) : (typeof item.image === 'string' ? item.image : null);
+                img.onerror = () => {
+                    img.src = checkoutPlaceholderImg;
+                    img.onerror = null;
+                };
+                img.src = resolvedSrc || checkoutPlaceholderImg;
 
                 const info = document.createElement('div');
                 info.className = 'item-info';
@@ -143,14 +165,15 @@
 
     <main class="page-container">
         <section class="checkout-panel">
-            <h2>Your Checkout</h2>
+            <h2>Your Order Summary</h2>
+            <p class="checkout-subtitle">Review your items and proceed to payment when ready</p>
             <div class="checkout-grid">
                 <div id="checkout-display" class="checkout-display"></div>
                 <aside class="checkout-side">
                     <div id="checkout-summary-total" class="checkout-summary-total">Total: ₱0.00</div>
                     <div class="checkout-actions">
-                        <button class="btn secondary" onclick="MerakiCart.clearCart();">Clear Checkout</button>
-                        <button class="btn secondary" id="proceed-payment-btn">Proceed to Payment</button>
+                        <button class="btn secondary" onclick="MerakiCart.clearCart();">Clear All Items</button>
+                        <button class="btn primary" id="proceed-payment-btn">Proceed to Payment</button>
                     </div>
                 </aside>
             </div>
@@ -162,7 +185,7 @@
         <div class="payment-modal-content">
             <h2>Scan to Pay with GCash</h2>
             <div class="qr-container">
-                <img src="../assets/gcash-qr.svg" alt="GCash QR Code" class="gcash-qr" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22 viewBox=%220 0 200 200%22%3E%3Crect width=%22200%22 height=%22200%22 fill=%22%23007bff%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2220%22 font-family=%22Arial%22%3EGCash QR%3C/text%3E%3C/svg%3E'" />
+                <img src="../assets/Gcashpic/gcash-qr.jpg" alt="GCash QR Code" class="gcash-qr" />
             </div>
             <p class="payment-instructions">Scan this QR code with your GCash app to complete payment</p>
             <div class="payment-amount" id="payment-amount">Total: ₱0.00</div>

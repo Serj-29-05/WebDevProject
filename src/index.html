@@ -11,98 +11,181 @@
         import { getHomepageBestSellers } from './scripts/bestseller-config.js';
         
         document.addEventListener('DOMContentLoaded', () => {
-            const bestSellers = getHomepageBestSellers();
-            const container = document.querySelector('.best-seller-list');
-            
-            if (container && bestSellers) {
-                container.innerHTML = bestSellers.map(product => `
-                    <article class="product-card" data-id="${product.id}">
-                        <img src="assets/menu/${product.image}" alt="${product.name}" loading="lazy" />
-                        <div class="product-info">
-                            <h4>${product.name}</h4>
-                            <div class="price">₱${product.price}</div>
-                            <p class="desc">${product.description}</p>
-                            <button class="add-cart" type="button" data-id="${product.id}">Add to Cart</button>
-                        </div>
-                    </article>
-                `).join('');
-                
-                // Attach event listeners to the dynamically added buttons
-                container.querySelectorAll('.add-cart').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const card = btn.closest('.product-card');
-                        if (!card) return;
-                        const nameEl = card.querySelector('h4');
-                        const priceEl = card.querySelector('.price');
-                        const descEl = card.querySelector('.desc');
-                        const id = btn.getAttribute('data-id') || `prod_${Date.now()}`;
+            const bestSellers = (getHomepageBestSellers() || []).slice(0, 3);
+            const stage = document.querySelector('.best-seller-list');
+            const carousel = document.querySelector('.best-seller-carousel');
+            const prevBtn = carousel?.querySelector('.carousel-arrow.prev') ?? null;
+            const nextBtn = carousel?.querySelector('.carousel-arrow.next') ?? null;
 
-                        const name = nameEl ? nameEl.textContent.trim() : 'Product';
-                        const priceText = priceEl ? priceEl.textContent.trim() : '0';
-                        const price = parseFloat(priceText.replace(/[^0-9.]/g, '')) || 0;
-                        const description = descEl ? descEl.textContent.trim() : '';
-
-                        // Add to cart
-                        try {
-                            const key = 'meraki_meraki_cart';
-                            const raw = localStorage.getItem(key) || '[]';
-                            const items = JSON.parse(raw);
-                            items.push({ id, name, price, description });
-                            localStorage.setItem(key, JSON.stringify(items));
-                            window.dispatchEvent(new CustomEvent('meraki:cart:changed'));
-                        } catch (e) {
-                            console.warn('Failed to add to cart', e);
-                        }
-
-                        // Fly-to-cart animation
-                        const img = card.querySelector('img');
-                        const preview = document.getElementById('cart-preview');
-                        let sx = window.innerWidth / 2, sy = window.innerHeight / 2;
-                        if (img) {
-                            const r = img.getBoundingClientRect();
-                            sx = r.left + r.width / 2;
-                            sy = r.top + r.height / 2;
-                        }
-                        let tx = window.innerWidth - 48, ty = 48;
-                        if (preview) {
-                            const pr = preview.getBoundingClientRect();
-                            tx = pr.left + pr.width / 2;
-                            ty = pr.top + pr.height / 2;
-                        }
-
-                        const clone = document.createElement('div');
-                        clone.style.position = 'fixed';
-                        clone.style.left = (sx - 12) + 'px';
-                        clone.style.top = (sy - 12) + 'px';
-                        clone.style.width = '24px';
-                        clone.style.height = '24px';
-                        clone.style.borderRadius = '6px';
-                        clone.style.background = 'linear-gradient(135deg,#ffd699,#ffb86b)';
-                        clone.style.zIndex = '9999';
-                        clone.style.pointerEvents = 'none';
-                        document.body.appendChild(clone);
-
-                        const dx = tx - sx;
-                        const dy = ty - sy;
-                        const anim = clone.animate([
-                            { transform: `translate(0px,0px) scale(1)`, opacity: 1 },
-                            { transform: `translate(${dx * 0.55}px,${dy * 0.55}px) scale(0.8)`, opacity: 1, offset: 0.6 },
-                            { transform: `translate(${dx}px,${dy}px) scale(0.14)`, opacity: 0 }
-                        ], { duration: 700, easing: 'cubic-bezier(.2,.9,.3,1)' });
-                        
-                        anim.onfinish = () => {
-                            clone.remove();
-                            // Show toast
-                            const toast = document.getElementById('ms-toast');
-                            if (toast) {
-                                toast.textContent = `${name} added to cart`;
-                                toast.classList.add('visible');
-                                setTimeout(() => toast.classList.remove('visible'), 1600);
-                            }
-                        };
-                    });
-                });
+            if (!stage || !bestSellers || bestSellers.length === 0) {
+                carousel?.classList.add('is-empty');
+                return;
             }
+
+            const placeholderImg = 'assets/menu/placeholder.jfif';
+
+            stage.innerHTML = bestSellers.map(product => {
+                const baseName = (product?.image || product?.id || '').toString().replace(/\.[^/.]+$/, '') || (product?.id || '');
+                return `
+                <article class="product-card" data-id="${product.id}" role="listitem" data-image-base="${baseName}">
+                    <img src="${placeholderImg}" alt="${product.name}" loading="lazy" />
+                    <div class="product-info">
+                        <h4>${product.name}</h4>
+                        <div class="price">₱${product.price}</div>
+                        <p class="desc">${product.description}</p>
+                        <button class="add-cart" type="button" data-id="${product.id}">Add to Cart</button>
+                    </div>
+                </article>
+            `;}).join('');
+
+            const cardImages = stage.querySelectorAll('.product-card img');
+            cardImages.forEach((img, idx) => {
+                const product = bestSellers[idx];
+                const baseName = (product?.image || product?.id || '').toString().replace(/\.[^/.]+$/, '') || (product?.id || '');
+                const jpgSrc = `assets/menu/${baseName}.jpg`;
+                img.onerror = () => {
+                    img.src = placeholderImg;
+                    img.onerror = null;
+                };
+                img.src = jpgSrc;
+            });
+
+            const cards = Array.from(stage.querySelectorAll('.product-card'));
+            let activeIndex = 0;
+
+            const normalizeIndex = (index) => {
+                const { length } = cards;
+                if (length === 0) return 0;
+                return ((index % length) + length) % length;
+            };
+
+            const updateCarousel = () => {
+                const total = cards.length;
+                cards.forEach((card, idx) => {
+                    let diff = idx - activeIndex;
+                    if (diff > total / 2) diff -= total;
+                    if (diff < -total / 2) diff += total;
+
+                    const position = Math.abs(diff) > 2 ? 'far' : diff.toString();
+                    card.dataset.position = position;
+                    const isActive = diff === 0;
+                    card.classList.toggle('is-active', isActive);
+                    card.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+                    card.tabIndex = isActive ? 0 : -1;
+                });
+
+                if (prevBtn) prevBtn.disabled = cards.length <= 1;
+                if (nextBtn) nextBtn.disabled = cards.length <= 1;
+            };
+
+            const go = (delta) => {
+                if (!cards.length) return;
+                activeIndex = normalizeIndex(activeIndex + delta);
+                updateCarousel();
+            };
+
+            prevBtn?.addEventListener('click', () => go(-1));
+            nextBtn?.addEventListener('click', () => go(1));
+
+            stage.addEventListener('click', (event) => {
+                const card = event.target instanceof Element ? event.target.closest('.product-card') : null;
+                if (!card) return;
+
+                const index = cards.indexOf(card);
+                if (index === -1) return;
+
+                if (index !== activeIndex) {
+                    activeIndex = index;
+                    updateCarousel();
+                    return;
+                }
+            });
+
+            carousel?.addEventListener('keydown', (event) => {
+                if (event.key === 'ArrowLeft') {
+                    event.preventDefault();
+                    go(-1);
+                } else if (event.key === 'ArrowRight') {
+                    event.preventDefault();
+                    go(1);
+                }
+            });
+
+            updateCarousel();
+
+            stage.querySelectorAll('.add-cart').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const card = btn.closest('.product-card');
+                    if (!card) return;
+                    const nameEl = card.querySelector('h4');
+                    const priceEl = card.querySelector('.price');
+                    const descEl = card.querySelector('.desc');
+                    const id = btn.getAttribute('data-id') || `prod_${Date.now()}`;
+
+                    const name = nameEl ? nameEl.textContent.trim() : 'Product';
+                    const priceText = priceEl ? priceEl.textContent.trim() : '0';
+                    const price = parseFloat(priceText.replace(/[^0-9.]/g, '')) || 0;
+                    const description = descEl ? descEl.textContent.trim() : '';
+
+                    try {
+                        const key = 'meraki_meraki_cart';
+                        const raw = localStorage.getItem(key) || '[]';
+                        const items = JSON.parse(raw);
+                        items.push({ id, name, price, description });
+                        localStorage.setItem(key, JSON.stringify(items));
+                        window.dispatchEvent(new CustomEvent('meraki:cart:changed'));
+                    } catch (e) {
+                        console.warn('Failed to add to cart', e);
+                    }
+
+                    const img = card.querySelector('img');
+                    const preview = document.getElementById('cart-preview');
+                    let sx = window.innerWidth / 2;
+                    let sy = window.innerHeight / 2;
+                    if (img) {
+                        const r = img.getBoundingClientRect();
+                        sx = r.left + r.width / 2;
+                        sy = r.top + r.height / 2;
+                    }
+                    let tx = window.innerWidth - 48;
+                    let ty = 48;
+                    if (preview) {
+                        const pr = preview.getBoundingClientRect();
+                        tx = pr.left + pr.width / 2;
+                        ty = pr.top + pr.height / 2;
+                    }
+
+                    const clone = document.createElement('div');
+                    clone.style.position = 'fixed';
+                    clone.style.left = `${sx - 12}px`;
+                    clone.style.top = `${sy - 12}px`;
+                    clone.style.width = '24px';
+                    clone.style.height = '24px';
+                    clone.style.borderRadius = '6px';
+                    clone.style.background = 'linear-gradient(135deg,#ffd699,#ffb86b)';
+                    clone.style.zIndex = '9999';
+                    clone.style.pointerEvents = 'none';
+                    document.body.appendChild(clone);
+
+                    const dx = tx - sx;
+                    const dy = ty - sy;
+                    const anim = clone.animate([
+                        { transform: 'translate(0px,0px) scale(1)', opacity: 1 },
+                        { transform: `translate(${dx * 0.55}px,${dy * 0.55}px) scale(0.8)`, opacity: 1, offset: 0.6 },
+                        { transform: `translate(${dx}px,${dy}px) scale(0.14)`, opacity: 0 }
+                    ], { duration: 700, easing: 'cubic-bezier(.2,.9,.3,1)' });
+
+                    anim.onfinish = () => {
+                        clone.remove();
+                        const toast = document.getElementById('ms-toast');
+                        if (toast) {
+                            toast.textContent = `${name} added to cart`;
+                            toast.classList.add('visible');
+                            setTimeout(() => toast.classList.remove('visible'), 1600);
+                        }
+                    };
+                });
+            });
         });
     </script>
 </head>
@@ -174,26 +257,35 @@
             </div>
         </section>
         <div class="best-seller-container">
+            <div class="best-seller-bg" aria-hidden="true"></div>
             <section class="best-seller" aria-labelledby="best-seller-title">
-                <h3 id="best-seller-title">Best Sellers</h3>
+                <h3 id="best-seller-title">Best Seller</h3>
                 <p class="best-seller-blurb">Sip what regulars rave about—crafted drinks and bites that fly from the bar every day.</p>
-                <div class="best-seller-list">
-                    <!-- Best sellers will be dynamically loaded from bestseller-config.js -->
+                <div class="best-seller-carousel">
+                    <button class="carousel-arrow prev" type="button" aria-label="Previous best seller">
+                        <span class="arrow-icon">‹</span>
+                    </button>
+                    <div class="best-seller-list" role="list" aria-live="polite">
+                        <!-- Best sellers will be dynamically loaded from bestseller-config.js -->
+                    </div>
+                    <button class="carousel-arrow next" type="button" aria-label="Next best seller">
+                        <span class="arrow-icon">›</span>
+                    </button>
                 </div>
             </section>
         </div>
         <section class="info">
             <div class="info-card">
-                <h3>🌿 Fresh Beans</h3>
-                <p>Sourced from the finest coffee farms around the world.</p>
+                <h3>🌿 Premium Ingredients</h3>
+                <p>We use only the finest, ethically-sourced ingredients from trusted suppliers worldwide to ensure every sip delights your taste buds.</p>
             </div>
             <div class="info-card">
-                <h3>🎨 Artisan Crafted</h3>
-                <p>Every cup is prepared with passion and care.</p>
+                <h3>🎨 Handcrafted with Love</h3>
+                <p>Each drink is meticulously prepared by our skilled baristas who pour their heart and expertise into every creation.</p>
             </div>
             <div class="info-card">
-                <h3>☕ Premium Quality</h3>
-                <p>Experience the richness of specialty coffee.</p>
+                <h3>☕ Unmatched Quality</h3>
+                <p>From signature milkteas to artisan frappes, we deliver exceptional taste and quality that keeps you coming back for more.</p>
             </div>
         </section>
     </main>

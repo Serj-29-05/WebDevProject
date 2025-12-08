@@ -46,12 +46,12 @@
                
                 { id: 's1', name: 'Green Sparkle', prices: { Grande: 49, Venti: 59 }, description: 'Refreshing lime soda sparkler', category: 'Soda' },
                 { id: 's2', name: 'Blueberry Cloud', prices: { Grande: 49, Venti: 59 }, description: 'Blueberry soda with creamy clouds', category: 'Soda' },
-                { id: 's3', name: 'Lychee Soda', prices: { Grande: 49, Venti: 59 }, description: 'Sweet lychee sparkling soda', category: 'Soda' },
+                { id: 's3', name: 'Lychee Soda Pop', prices: { Grande: 49, Venti: 59 }, description: 'Sweet lychee sparkling soda', category: 'Soda' },
                 { id: 's4', name: 'Strawberry Burst', prices: { Grande: 49, Venti: 59 }, description: 'Berry explosion in every sip', category: 'Soda' },
                 { id: 's5', name: 'Blue Lagoon', prices: { Grande: 49, Venti: 59 }, description: 'Tropical blue curacao soda', category: 'Soda' },
-                { id: 's6', name: 'Sparkling Apple', prices: { Grande: 49, Venti: 59 }, description: 'Crisp sparkling apple soda', category: 'Soda' },
+                { id: 's6', name: 'Sparkling Apple Dew', prices: { Grande: 49, Venti: 59 }, description: 'Crisp sparkling apple soda', category: 'Soda' },
                 
-                { id: 'frp1', name: 'Oreo Java Chip', price: 79, description: 'Coffee frappe with oreo and chocolate chips', category: 'Frappe' },
+                { id: 'frp1', name: 'Loaded Java Chips', price: 79, description: 'Coffee frappe with oreo and chocolate chips', category: 'Frappe' },
                 { id: 'frp2', name: 'Mango', price: 79, description: 'Tropical mango blended frappe', category: 'Frappe' },
                 { id: 'frp3', name: 'Creamy Avocado', price: 79, description: 'Smooth and creamy avocado frappe', category: 'Frappe' },
                 { id: 'frp4', name: 'Ube', price: 79, description: 'Filipino purple yam frappe', category: 'Frappe' },
@@ -81,7 +81,18 @@
                 Venti: 'Venti (20 oz)'
             };
 
-            const placeholderImg = '../assets/menu/placeholder.svg';
+            const placeholderImg = '../assets/menu/placeholder.jfif';
+            const assetBasePath = '../assets/menu/';
+
+            const getImagePath = (id) => `${assetBasePath}${id}.jpg`;
+
+            const setupImageFallback = (imgEl) => {
+                if (!imgEl) return;
+                imgEl.onerror = () => {
+                    imgEl.src = placeholderImg;
+                    imgEl.onerror = null;
+                };
+            };
             const itemModal = document.getElementById('item-modal');
             const modalImg = document.querySelector('#item-modal .modal-img');
             const modalTitle = document.getElementById('item-modal-title');
@@ -111,7 +122,7 @@
             }
 
             function addItemToCart(item, size) {
-                const image = `../assets/menu/${item.id}.svg`;
+                const imagePath = getImagePath(item.id);
                 const actualSize = item.prices ? (size || Object.keys(item.prices)[0]) : null;
                 const price = item.prices ? item.prices[actualSize] : item.price;
                 const displaySize = actualSize ? (sizeDisplayMap[actualSize] || actualSize) : null;
@@ -122,7 +133,7 @@
                     description: item.description,
                     size: displaySize,
                     price,
-                    image
+                    image: imagePath
                 };
                 MerakiCart.addToCart(cartItem);
                 MerakiCart.updateCartDisplay();
@@ -149,13 +160,9 @@
             function openItemModal(item, presetSize) {
                 modalItem = item;
                 lastTrigger = document.activeElement;
-                const imgSrc = `../assets/menu/${item.id}.svg`;
-                modalImg.src = imgSrc;
+                setupImageFallback(modalImg);
+                modalImg.src = getImagePath(item.id);
                 modalImg.alt = item.name;
-                modalImg.onerror = () => {
-                    modalImg.onerror = null;
-                    modalImg.src = placeholderImg;
-                };
                 modalTitle.textContent = item.name;
                 modalDesc.textContent = item.description;
 
@@ -252,7 +259,7 @@
                     const itemIsBestSeller = isBestSeller(it.id);
                     if (itemIsBestSeller) el.classList.add('best-seller');
                     el.dataset.category = it.category;
-                    const imgSrc = `../assets/menu/${it.id}.svg`;
+                    const imgPath = getImagePath(it.id);
                     const badgeHTML = itemIsBestSeller ? '<span class="best-seller-badge">⭐ Best Seller</span>' : '';
 
                     if (it.prices) {
@@ -265,7 +272,7 @@
                         el.innerHTML = `
                             ${badgeHTML}
                             <div class="mi-left">
-                                <img class="mi-img" src="${imgSrc}" alt="${it.name}" title="${it.name}" loading="lazy" tabindex="0" role="button" onerror="this.onerror=null;this.src='${placeholderImg}'"/>
+                                <img class="mi-img" src="${placeholderImg}" alt="${it.name}" title="${it.name}" loading="lazy" tabindex="0" role="button" />
                                 <div class="mi-info">
                                     <div class="mi-title">${it.name}</div>
                                     <div class="mi-desc">${it.description}</div>
@@ -281,7 +288,7 @@
                         el.innerHTML = `
                             ${badgeHTML}
                             <div class="mi-left">
-                                <img class="mi-img" src="${imgSrc}" alt="${it.name}" title="${it.name}" loading="lazy" tabindex="0" role="button" onerror="this.onerror=null;this.src='${placeholderImg}'"/>
+                                <img class="mi-img" src="${placeholderImg}" alt="${it.name}" title="${it.name}" loading="lazy" tabindex="0" role="button" />
                                 <div class="mi-info">
                                     <div class="mi-title">${it.name}</div>
                                     <div class="mi-desc">${it.description}</div>
@@ -298,6 +305,11 @@
 
                     const addBtn = el.querySelector('.mi-add');
                     const imgEl = el.querySelector('.mi-img');
+
+                        if (imgEl) {
+                            setupImageFallback(imgEl);
+                            imgEl.src = imgPath;
+                    }
 
                     if (it.prices) {
                         const priceEl = el.querySelector('.mi-price');
@@ -434,7 +446,7 @@
     <div id="item-modal" class="item-modal" aria-hidden="true">
         <div class="item-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="item-modal-title">
             <button type="button" class="modal-close" id="modal-close" aria-label="Close product details">×</button>
-            <img src="../assets/menu/placeholder.svg" alt="" class="modal-img" />
+            <img src="../assets/menu/placeholder.jfif" alt="" class="modal-img" />
             <div class="modal-body">
                 <h2 id="item-modal-title"></h2>
                 <p id="item-modal-desc" class="modal-desc"></p>
