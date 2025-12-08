@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="../styles/checkout.css" />
     <script src="../scripts/app.js" defer></script>
     <script type="module">
-        import { getCartItems, removeFromCart, clearCart } from '../scripts/cart.js';
+        import { getCartItems, removeFromCart, changeItemQuantity } from '../scripts/cart.js';
 
         function formatPrice(n) {
             return `₱${Number(n || 0).toFixed(2)}`;
@@ -40,6 +40,8 @@
                     <a href="browse.html" class="browse-menu-btn">Browse Menu</a>
                 `;
                 cartDisplay.appendChild(empty);
+                const summaryEmpty = document.getElementById('checkout-summary-total');
+                if (summaryEmpty) summaryEmpty.textContent = `Total: ${formatPrice(0)}`;
                 return;
             }
 
@@ -66,25 +68,60 @@
                 title.textContent = item.name;
                 const meta = document.createElement('div');
                 meta.className = 'item-meta';
-                meta.textContent = item.size ? `Size: ${item.size}` : '';
+                const metaParts = [];
+                if (item.size) metaParts.push(`Size: ${item.size}`);
+                if (item.description) metaParts.push(item.description);
+                meta.textContent = metaParts.join(' • ');
 
                 info.appendChild(title);
                 info.appendChild(meta);
 
                 const controls = document.createElement('div');
                 controls.className = 'item-controls';
+                const quantity = item.quantity && item.quantity > 0 ? item.quantity : 1;
+                const qtyControls = document.createElement('div');
+                qtyControls.className = 'quantity-controls';
+                qtyControls.dataset.id = item.id;
+
+                const decreaseBtn = document.createElement('button');
+                decreaseBtn.type = 'button';
+                decreaseBtn.className = 'qty-btn';
+                decreaseBtn.dataset.action = 'decrease';
+                decreaseBtn.textContent = '-';
+                decreaseBtn.addEventListener('click', () => {
+                    changeItemQuantity(item.id, -1);
+                });
+
+                const qtyValue = document.createElement('span');
+                qtyValue.className = 'qty-value';
+                qtyValue.textContent = quantity;
+
+                const increaseBtn = document.createElement('button');
+                increaseBtn.type = 'button';
+                increaseBtn.className = 'qty-btn';
+                increaseBtn.dataset.action = 'increase';
+                increaseBtn.textContent = '+';
+                increaseBtn.addEventListener('click', () => {
+                    changeItemQuantity(item.id, 1);
+                });
+
+                qtyControls.appendChild(decreaseBtn);
+                qtyControls.appendChild(qtyValue);
+                qtyControls.appendChild(increaseBtn);
+
                 const price = document.createElement('div');
                 price.className = 'price';
-                price.textContent = formatPrice(item.price);
+                price.textContent = formatPrice(Number(item.price || 0) * quantity);
                 const rm = document.createElement('button');
                 rm.className = 'remove-btn';
+                rm.type = 'button';
                 rm.textContent = 'Remove';
                 rm.dataset.id = item.id;
                 rm.addEventListener('click', () => {
                     removeFromCart(item.id);
-                    renderCheckout();
                 });
 
+                controls.appendChild(qtyControls);
                 controls.appendChild(price);
                 controls.appendChild(rm);
 
@@ -95,7 +132,7 @@
                 cartDisplay.appendChild(row);
             });
 
-            const total = items.reduce((s, it) => s + Number(it.price || 0), 0);
+            const total = items.reduce((s, it) => s + (Number(it.price || 0) * (it.quantity && it.quantity > 0 ? it.quantity : 1)), 0);
             const summary = document.getElementById('checkout-summary-total');
             if (summary) summary.textContent = `Total: ${formatPrice(total)}`;
         }
@@ -138,12 +175,12 @@
             <h2>Your Order Summary</h2>
             <p class="checkout-subtitle">Review your items and proceed to payment when ready</p>
             <div class="checkout-grid">
-                <div id="checkout-display" class="checkout-display"></div>
+                <div id="checkout-display" class="checkout-display" data-managed-by="checkout-module"></div>
                 <aside class="checkout-side">
                     <div id="checkout-summary-total" class="checkout-summary-total">Total: ₱0.00</div>
                     <div class="checkout-actions">
-                        <button class="btn secondary" onclick="MerakiCart.clearCart();">Clear All Items</button>
-                        <button class="btn primary" id="proceed-payment-btn">Proceed to Payment</button>
+                        <button type="button" class="btn secondary" onclick="MerakiCart.clearCart();">Clear All Items</button>
+                        <button type="button" class="btn primary" id="proceed-payment-btn">Proceed to Payment</button>
                     </div>
                 </aside>
             </div>
@@ -160,8 +197,8 @@
             <p class="payment-instructions">Scan this QR code with your GCash app to complete payment</p>
             <div class="payment-amount" id="payment-amount">Total: ₱0.00</div>
             <div class="payment-modal-actions">
-                <button class="btn secondary" id="cancel-payment-btn">Cancel</button>
-                <button class="btn primary" id="confirm-payment-btn">I've Paid</button>
+                <button type="button" class="btn secondary" id="cancel-payment-btn">Cancel</button>
+                <button type="button" class="btn primary" id="confirm-payment-btn">I've Paid</button>
             </div>
         </div>
     </div>
@@ -200,7 +237,7 @@
                 alert('Your cart is empty. Please add items before proceeding.');
                 return;
             }
-            const total = items.reduce((s, it) => s + Number(it.price || 0), 0);
+            const total = items.reduce((s, it) => s + (Number(it.price || 0) * (it.quantity && it.quantity > 0 ? it.quantity : 1)), 0);
             paymentAmount.textContent = `Total: ₱${total.toFixed(2)}`;
             paymentModal.classList.add('show');
             document.body.style.overflow = 'hidden';
