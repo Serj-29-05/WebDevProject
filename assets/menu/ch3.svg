@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="360">
-  <rect width="100%" height="100%" fill="#fff7ec"/>
-  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" fill="#6b3f2b">Oreolicious</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 320 320" role="img" aria-labelledby="title desc">
+  <defs>
+    <linearGradient id="ch3-bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#f9efe9" />
+      <stop offset="100%" stop-color="#fde5d0" />
+    </linearGradient>
+    <filter id="softShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="rgba(0,0,0,0.18)" />
+    </filter>
+  </defs>
+  <title id="title">Oreolicious</title>
+  <desc id="desc">Stylized illustration representing Oreolicious from the Cheesecake category.</desc>
+  <rect width="100%" height="100%" rx="28" fill="url(#ch3-bg)" />
+  <g transform="translate(0, -10)">
+    <g transform="translate(160.0, 150.0)" filter="url(#softShadow)">
+      <g transform="translate(-100,-80)"><path d="M20 60 L150 0 L200 120 L50 170 Z" fill="#f7b267" stroke="#b5673a" stroke-width="6" stroke-linejoin="round" /><path d="M50 170 L200 120 L200 180 L50 230 Z" fill="#b5673a" opacity="0.65" /><path d="M20 60 L50 170 L50 230 L20 120 Z" fill="#fff4e3" opacity="0.9" /><circle cx="160" cy="40" r="18" fill="#ff9aa2" opacity="0.9" /><circle cx="180" cy="70" r="12" fill="#ffd880" opacity="0.8" /></g>
+    </g>
+  </g>
+  <g transform="translate(160.0, 266)" font-family="'Segoe UI', sans-serif" fill="#b5673a" text-anchor="middle">
+    <text font-size="22" font-weight="600" y="0">Oreolicious</text>
+  </g>
 </svg>

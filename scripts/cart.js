@@ -10,7 +10,15 @@ function loadCart() {
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) return [];
-        return JSON.parse(raw);
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed.map(item => {
+            if (item && !item.baseId) {
+                const idText = String(item.id || '');
+                item.baseId = idText.includes('_') ? idText.split('_')[0] : idText;
+            }
+            return item;
+        });
     } catch (e) {
         console.warn('Failed to load cart from storage', e);
         return [];
@@ -32,6 +40,10 @@ function addToCart(item) {
     // ensure item has id, name, price
     if (!item || !item.id) {
         item.id = `i_${Date.now()}_${Math.floor(Math.random()*1000)}`;
+    }
+    if (!item.baseId) {
+        const rawId = String(item.id || '');
+        item.baseId = rawId.includes('_') ? rawId.split('_')[0] : rawId;
     }
     cart.push(item);
     saveCart();

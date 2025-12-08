@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="360">
-  <rect width="100%" height="100%" fill="#fdeff2"/>
-  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#6b2b3a">Strawberry</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 320 320" role="img" aria-labelledby="title desc">
+  <defs>
+    <linearGradient id="frp5-bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#f5eff9" />
+      <stop offset="100%" stop-color="#dbcff0" />
+    </linearGradient>
+    <filter id="softShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="rgba(0,0,0,0.18)" />
+    </filter>
+  </defs>
+  <title id="title">Strawberry</title>
+  <desc id="desc">Stylized illustration representing Strawberry from the Frappe category.</desc>
+  <rect width="100%" height="100%" rx="28" fill="url(#frp5-bg)" />
+  <g transform="translate(0, -10)">
+    <g transform="translate(160.0, 150.0)" filter="url(#softShadow)">
+      <g transform="translate(-90, -110)">
+        <path d="M40 0 h160 l-18 170 a20 20 0 0 1 -20 18 h-84 a20 20 0 0 1 -20-18z" fill="#b48ad8" stroke="#60467d" stroke-width="6" stroke-linejoin="round" />
+        <rect x="60" y="-36" width="120" height="36" rx="12" fill="#f9f6ff" stroke="#60467d" stroke-width="6" />
+        <path d="M92 -60 h56 l16 -78" fill="none" stroke="#d36ef6" stroke-width="10" stroke-linecap="round" />
+      </g><g transform="translate(-60,-60)"><path d="M0 0 q60 -50 120 0 t0 60 h-120z" fill="#fffaf5" stroke="rgba(0,0,0,0.04)" stroke-width="6" /><circle cx="40" cy="-6" r="14" fill="#ffe6f9" opacity="0.7" /><circle cx="80" cy="-12" r="10" fill="#f9d5ff" opacity="0.7" /></g>
+    </g>
+  </g>
+  <g transform="translate(160.0, 266)" font-family="'Segoe UI', sans-serif" fill="#60467d" text-anchor="middle">
+    <text font-size="22" font-weight="600" y="0">Strawberry</text>
+  </g>
 </svg>

@@ -2,26 +2,33 @@
 // Edit this file to change which products appear as best sellers
 
 export const bestSellerConfig = {
-    // Products displayed on homepage (2 items)
+    // Products displayed on homepage (3 items)
     homepageBestSellers: [
         {
-            id: 'ic3',
-            name: 'Salted Caramel Latte',
-            price: 145,
-            description: 'Balanced espresso, caramel drizzle, and milk foam for a silky-sweet finish.',
-            image: 'ic4.svg'
+            id: 'frp1',
+            name: 'Loaded Java Chips',
+            price: 79,
+            description: 'Coffee frappe with oreo and chocolate chips',
+            image: 'frp1.jpg'
         },
         {
-            id: 'ft6',
-            name: 'Strawberry Matcha',
-            price: 135,
-            description: 'Vibrant matcha layered with house strawberry puree and fresh milk.',
-            image: 'ft3.svg'
+            id: 'ic5',
+            name: 'Matcha Iced Coffee',
+            price: 49,
+            description: 'Green tea latte with a coffee twist',
+            image: 'ic5.jpg'
+        },
+        {
+            id: 'ic4',
+            name: 'Dark Mocha',
+            price: 49,
+            description: 'Rich chocolate blended with espresso',
+            image: 'ic4.jpg'
         }
     ],
     
     // Product IDs that get the "Best Seller" badge on browse/menu page
-    menuBestSellerIds: ['ic3', 'ft6']
+    menuBestSellerIds: ['frp1', 'ic5', 'ic4']
 };
 
 // Helper function to check if a product is a best seller

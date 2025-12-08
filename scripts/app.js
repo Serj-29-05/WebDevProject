@@ -121,27 +121,40 @@ document.addEventListener('DOMContentLoaded', () => {
         items.forEach((item, index) => {
             const itemEl = document.createElement('div');
             itemEl.className = 'cart-item';
-            
-            const imgSrc = item.id ? `${window.location.pathname.includes('/pages/') ? '../' : ''}assets/menu/${item.id}.svg` : '';
+
+            const prefix = window.location.pathname.includes('/pages/') ? '../' : '';
+            const placeholderPath = `${prefix}assets/menu/placeholder.jfif`;
+            const rawId = String(item.baseId || item.id || '');
+            const baseId = rawId.includes('_') ? rawId.split('_')[0] : rawId;
+            const resolvedImage = baseId ? `${prefix}assets/menu/${baseId}.jpg` : (typeof item.image === 'string' ? item.image : placeholderPath);
+
             const price = Number(item.price || 0);
             total += price;
 
             itemEl.innerHTML = `
                 <button class="cart-item-remove" data-index="${index}" title="Remove item" aria-label="Remove ${item.name}">&times;</button>
-                ${imgSrc ? `<img src="${imgSrc}" alt="${item.name}" class="cart-item-img" onerror="this.style.display='none'">` : ''}
+                <img src="${placeholderPath}" alt="${item.name}" class="cart-item-img">
                 <div class="cart-item-info">
                     <div class="cart-item-name">${item.name || 'Item'}</div>
                     ${item.size ? `<div class="cart-item-size">Size: ${item.size}</div>` : ''}
                     <div class="cart-item-price">₱${price.toFixed(2)}</div>
                 </div>
             `;
-            
-            // Add remove button event listener
+
+            const cartImg = itemEl.querySelector('.cart-item-img');
+            if (cartImg) {
+                cartImg.onerror = () => {
+                    cartImg.src = placeholderPath;
+                    cartImg.onerror = null;
+                };
+                cartImg.src = resolvedImage || placeholderPath;
+            }
+
             const removeBtn = itemEl.querySelector('.cart-item-remove');
             removeBtn.addEventListener('click', () => {
                 removeCartItem(index);
             });
-            
+
             cartItemsList.appendChild(itemEl);
         });
 
@@ -254,7 +267,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const nameEl = card.querySelector('h4');
             const priceEl = card.querySelector('.price');
             const descEl = card.querySelector('.desc');
-            const id = btn.getAttribute('data-id') || (`prod_${Date.now()}`);
+            const id = btn.getAttribute('data-id') || `prod_${Date.now()}`;
+            const baseId = typeof id === 'string' ? id.split('_')[0] : id;
 
             const name = nameEl ? nameEl.textContent.trim() : 'Product';
             const priceText = priceEl ? priceEl.textContent.trim() : '0';
@@ -263,15 +277,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 if (window.MerakiCart && typeof window.MerakiCart.addToCart === 'function') {
-                    window.MerakiCart.addToCart({ id, name, price, description });
+                    window.MerakiCart.addToCart({ id, baseId, name, price, description });
                 } else if (typeof addToCart === 'function') {
-                    addToCart({ id, name, price, description });
+                    addToCart({ id, baseId, name, price, description });
                 } else {
                     // fallback: use localStorage directly
                     const key = 'meraki_meraki_cart';
                     const raw = localStorage.getItem(key) || '[]';
                     const items = JSON.parse(raw);
-                    items.push({ id, name, price, description });
+                    items.push({ id, baseId, name, price, description });
                     localStorage.setItem(key, JSON.stringify(items));
                     window.dispatchEvent(new CustomEvent('meraki:cart:changed'));
                 }

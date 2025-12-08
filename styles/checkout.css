@@ -41,6 +41,54 @@ body::before {
     box-shadow: 0 6px 18px rgba(0,0,0,0.06);
 }
 
+.checkout-subtitle {
+    color: #6b5a52;
+    font-size: 0.95rem;
+    margin: -0.5rem 0 1.5rem 0;
+    opacity: 0.9;
+}
+
+.empty-msg {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #6b5a52;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+.empty-msg h3 {
+    color: #4a2f23;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.empty-msg p {
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+}
+
+.browse-menu-btn {
+    display: inline-block;
+    background: linear-gradient(135deg, #6f4e37, #8b5a3c);
+    color: white;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(111, 78, 55, 0.3);
+}
+
+.browse-menu-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(111, 78, 55, 0.4);
+    background: linear-gradient(135deg, #8b5a3c, #a0714f);
+}
+
 .checkout-display {
     background: #fff;
     border-radius: 10px;
@@ -62,9 +110,8 @@ body::before {
     z-index: -1;
     transition: opacity 0.3s ease;
 }
-
-.checkout-display:hover::before {
-    opacity: 1;
+.logo img {
+    max-width: 140px;
 }
 
 .checkout-item {
@@ -243,14 +290,47 @@ body::before {
 }
 
 .btn.primary {
-    background: #007bff;
-    color: #fff;
+    background: linear-gradient(135deg, #ffd699 0%, #ffb86b 100%);
+    color: #6f4e37;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    padding: 0.85rem 1.75rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(.2,.9,.3,1);
+    box-shadow: 0 4px 16px rgba(255, 184, 107, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn.primary::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+}
+
+.btn.primary:hover::before {
+    width: 300px;
+    height: 300px;
 }
 
 .btn.primary:hover {
-    background: #0056b3;
+    background: linear-gradient(135deg, #ffe5bc 0%, #ffc488 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(255, 184, 107, 0.5);
+}
+
+.btn.primary:active {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    box-shadow: 0 4px 12px rgba(255, 184, 107, 0.4);
 }
 
 /* Thank You Screen Styles */
