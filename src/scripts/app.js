@@ -34,8 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateCartPreview = () => {
         try {
             const items = window.MerakiCart ? window.MerakiCart.getCartItems() : JSON.parse(localStorage.getItem('meraki_meraki_cart') || '[]');
-            const count = (items && items.length) || 0;
-            const total = (items || []).reduce((s, it) => s + Number(it.price || 0), 0);
+            const count = (items || []).reduce((sum, it) => sum + (it.quantity && it.quantity > 0 ? it.quantity : 1), 0);
+            const total = (items || []).reduce((s, it) => s + (Number(it.price || 0) * (it.quantity && it.quantity > 0 ? it.quantity : 1)), 0);
             if (previewBtn) {
                 const currency = `₱${total.toFixed(2)}`;
                 previewBtn.textContent = `${count} ${count === 1 ? 'item' : 'items'} • ${currency}`;
@@ -128,16 +128,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const baseId = rawId.includes('_') ? rawId.split('_')[0] : rawId;
             const resolvedImage = baseId ? `${prefix}assets/menu/${baseId}.jpg` : (typeof item.image === 'string' ? item.image : placeholderPath);
 
+            const quantity = item.quantity && item.quantity > 0 ? item.quantity : 1;
             const price = Number(item.price || 0);
-            total += price;
+            const lineTotal = price * quantity;
+            total += lineTotal;
 
             itemEl.innerHTML = `
-                <button class="cart-item-remove" data-index="${index}" title="Remove item" aria-label="Remove ${item.name}">&times;</button>
+                <button type="button" class="cart-item-remove" data-index="${index}" title="Remove item" aria-label="Remove ${item.name}">&times;</button>
                 <img src="${placeholderPath}" alt="${item.name}" class="cart-item-img">
                 <div class="cart-item-info">
                     <div class="cart-item-name">${item.name || 'Item'}</div>
                     ${item.size ? `<div class="cart-item-size">Size: ${item.size}</div>` : ''}
-                    <div class="cart-item-price">₱${price.toFixed(2)}</div>
+                    <div class="cart-item-qty">Quantity: ${quantity}</div>
+                    <div class="cart-item-price">₱${lineTotal.toFixed(2)}</div>
                 </div>
             `;
 
@@ -166,16 +169,23 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             // Get current cart items
             let items = window.MerakiCart ? window.MerakiCart.getCartItems() : JSON.parse(localStorage.getItem('meraki_meraki_cart') || '[]');
-            
-            // Remove item at index
-            items.splice(index, 1);
-            
-            // Save back to localStorage
-            localStorage.setItem('meraki_meraki_cart', JSON.stringify(items));
-            
-            // Trigger cart update event
-            window.dispatchEvent(new CustomEvent('meraki:cart:changed'));
-            
+            const item = items[index];
+            if (!item) return;
+
+            if (window.MerakiCart && typeof window.MerakiCart.changeItemQuantity === 'function') {
+                window.MerakiCart.changeItemQuantity(item.id, -1);
+                items = window.MerakiCart.getCartItems();
+            } else {
+                const currentQty = item.quantity && item.quantity > 0 ? item.quantity : 1;
+                if (currentQty <= 1) {
+                    items.splice(index, 1);
+                } else {
+                    items[index].quantity = currentQty - 1;
+                }
+                localStorage.setItem('meraki_meraki_cart', JSON.stringify(items));
+                window.dispatchEvent(new CustomEvent('meraki:cart:changed'));
+            }
+
             // Re-render cart items in modal
             renderCartItems(items);
         } catch (e) {
@@ -284,8 +294,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     // fallback: use localStorage directly
                     const key = 'meraki_meraki_cart';
                     const raw = localStorage.getItem(key) || '[]';
-                    const items = JSON.parse(raw);
-                        items.push({ id, baseId, name, price, description });
+                        const items = JSON.parse(raw);
+                        const existing = items.find(it => String(it.id) === String(id));
+                        if (existing) {
+                            const qty = existing.quantity && existing.quantity > 0 ? existing.quantity : 1;
+                            existing.quantity = qty + 1;
+                        } else {
+                            items.push({ id, baseId, name, price, description, quantity: 1 });
+                        }
                     localStorage.setItem(key, JSON.stringify(items));
                     window.dispatchEvent(new CustomEvent('meraki:cart:changed'));
                 }
