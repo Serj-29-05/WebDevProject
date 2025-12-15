@@ -836,30 +836,6 @@ function setupOrderSync() {
         });
     }
     
-    // Add test order button handler
-    const testOrderBtn = document.getElementById('btn-test-order');
-    if (testOrderBtn) {
-        testOrderBtn.addEventListener('click', () => {
-            const testOrder = {
-                id: `ORD-${Date.now()}-TEST`,
-                timestamp: new Date().toISOString(),
-                items: [
-                    { id: 'm1', name: 'Bubble Tea', quantity: 2, price: 49 }
-                ],
-                total: 98,
-                status: 'pending_fulfillment',
-                processed: false
-            };
-            
-            const orders = JSON.parse(localStorage.getItem('meraki_orders') || '[]');
-            orders.push(testOrder);
-            localStorage.setItem('meraki_orders', JSON.stringify(orders));
-            
-            showToast('Test order added! Click "Process Website Orders" to test.', 'success');
-            checkPendingOrders();
-        });
-    }
-    
     // Check for pending orders on load
     checkPendingOrders();
 }
