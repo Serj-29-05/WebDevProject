@@ -150,9 +150,15 @@ function processPendingOrders() {
     const ORDERS_KEY = 'meraki_orders';
     const PRODUCT_RECIPES = window.PRODUCT_RECIPES || {};
     
+    console.log('=== Processing Orders Debug ===');
+    console.log('PRODUCT_RECIPES loaded:', Object.keys(PRODUCT_RECIPES).length > 0 ? 'YES' : 'NO');
+    console.log('Available recipes:', Object.keys(PRODUCT_RECIPES));
+    
     try {
         const orders = JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]');
         const pendingOrders = orders.filter(o => !o.processed && o.status === 'pending_fulfillment');
+        
+        console.log('Pending orders:', pendingOrders);
         
         const results = [];
         
@@ -160,9 +166,15 @@ function processPendingOrders() {
             // Calculate ingredient requirements
             const requirements = {};
             
+            console.log('Processing order:', order.id);
+            console.log('Order items:', order.items);
+            
             order.items.forEach(item => {
                 const productId = String(item.id).toLowerCase();
                 const recipe = PRODUCT_RECIPES[productId];
+                
+                console.log(`Looking for recipe for product: ${productId}`);
+                console.log(`Recipe found:`, recipe);
                 
                 if (!recipe || !recipe.ingredients) {
                     console.warn(`No recipe for product: ${productId}`);
@@ -174,6 +186,8 @@ function processPendingOrders() {
                     requirements[ing] = (requirements[ing] || 0) + (amt * quantity);
                 });
             });
+            
+            console.log('Total requirements:', requirements);
             
             // Deduct ingredients
             const result = deductIngredients(requirements);
