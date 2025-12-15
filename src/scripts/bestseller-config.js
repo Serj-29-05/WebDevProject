@@ -5,30 +5,30 @@ export const bestSellerConfig = {
     // Products displayed on homepage (3 items)
     homepageBestSellers: [
         {
-            id: 'ic6',
-            name: 'Hazelnut Iced Coffee',
-            price: 49,
-            description: 'Nutty hazelnut coffee delight.',
-            image: 'ic6.jpg'
-        },
-        {
-            id: 'ft6',
-            name: 'Strawberry Fruit Tea',
-            price: 49,
-            description: 'Sweet strawberry fruit tea.',
-            image: 'ft6.jpg'
-        },
-        {
-            id: 'frp3',
-            name: 'Creamy Avocado Frappe',
+            id: 'frp1',
+            name: 'Loaded Java Chips',
             price: 79,
-            description: 'Smooth and creamy avocado frappe.',
-            image: 'frp3.jpg'
+            description: 'Coffee frappe with oreo and chocolate chips',
+            image: 'frp1.jpg'
+        },
+        {
+             id: 'ic5',
+            name: 'Matcha Iced Coffee',
+            price: 49,
+            description: 'Green tea latte with a coffee twist',
+            image: 'ic5.jpg'
+        },
+        {
+           id: 'ic4',
+            name: 'Dark Mocha',
+            price: 49,
+            description: 'Rich chocolate blended with espresso',
+            image: 'ic4.jpg'
         }
     ],
     
     // Product IDs that get the "Best Seller" badge on browse/menu page
-    menuBestSellerIds: ['ic6', 'ft6', 'frp3']
+    menuBestSellerIds: ['frp1', 'ic5', 'ic4']
 };
 
 // Helper function to check if a product is a best seller

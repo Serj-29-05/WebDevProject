@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="../styles/style.css" />
     <link rel="stylesheet" href="../styles/checkout.css" />
     <script src="../scripts/app.js" defer></script>
+    <script src="../scripts/recipes.js"></script>
+    <script src="../scripts/order-processor.js"></script>
     <script type="module">
         import { getCartItems, removeFromCart, changeItemQuantity } from '../scripts/cart.js';
 
@@ -281,6 +283,18 @@
 
         // Confirm payment and show thank you
         confirmBtn.addEventListener('click', () => {
+            // Get cart items before clearing
+            const items = window.MerakiCart.getCartItems();
+            
+            // Record the order for inventory processing
+            if (window.MerakiOrders && items.length > 0) {
+                const order = window.MerakiOrders.recordOrder(items);
+                if (order) {
+                    console.log('Order created:', order.id);
+                    console.log('Ingredient requirements:', window.MerakiOrders.calculateIngredientRequirements(order));
+                }
+            }
+            
             paymentModal.classList.remove('show');
             thankYouScreen.classList.add('show');
             // Clear cart after successful payment
