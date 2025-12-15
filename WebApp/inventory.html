@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingredients Inventory - Meraki Sipside</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="../WebSite/meraki-sipside/src/scripts/recipes.js"></script>
+    <script src="inventory-sync.js"></script>
+    <script src="inventory.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <img src="meraki.png" alt="Meraki Sipside logo" class="logo-mark" />
+                <h1>Meraki Sipside - Ingredients Inventory</h1>
+            </div>
+            <nav>
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="menu.html" class="nav-link">Menu</a>
+                <a href="inventory.html" class="nav-link active">Inventory</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="inventory-container">
+        <!-- Dashboard Section -->
+        <section class="dashboard">
+            <h2>Inventory Dashboard</h2>
+            <div class="dashboard-cards">
+                <div class="dashboard-card">
+                    <div class="card-icon">📦</div>
+                    <div class="card-content">
+                        <h3 id="total-products">0</h3>
+                        <p>Total Ingredients</p>
+                    </div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="card-icon">✅</div>
+                    <div class="card-content">
+                        <h3 id="in-stock-products">0</h3>
+                        <p>In Stock</p>
+                    </div>
+                </div>
+                <div class="dashboard-card alert">
+                    <div class="card-icon">⚠️</div>
+                    <div class="card-content">
+                        <h3 id="low-stock-products">0</h3>
+                        <p>Low Stock</p>
+                    </div>
+                </div>
+                <div class="dashboard-card danger">
+                    <div class="card-icon">❌</div>
+                    <div class="card-content">
+                        <h3 id="out-of-stock-products">0</h3>
+                        <p>Out of Stock</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Controls Section -->
+        <section class="controls">
+            <div class="controls-left">
+                <button id="btn-add-ingredient" class="btn btn-primary">➕ Add New Ingredient</button>
+                <button id="btn-sync-orders" class="btn btn-success">🔄 Process Website Orders</button>
+                <button id="btn-test-order" class="btn btn-warning" style="background-color: #f59e0b;">🧪 Add Test Order</button>
+                <button id="btn-export-data" class="btn btn-secondary">📥 Export Data</button>
+                <button id="btn-import-data" class="btn btn-secondary">📤 Import Data</button>
+            </div>
+            <div class="controls-right">
+                <input type="text" id="search-inventory" placeholder="🔍 Search products..." class="search-input">
+                <select id="filter-category" class="filter-select">
+                    <option value="all">All Categories</option>
+                    <option value="Bases">Bases</option>
+                    <option value="Powders">Powders</option>
+                    <option value="Syrups">Syrups</option>
+                    <option value="Dairy">Dairy & Liquids</option>
+                    <option value="Toppings">Toppings & Add-ons</option>
+                    <option value="Fresh">Fresh Items</option>
+                    <option value="Snack Ingredients">Snack Ingredients</option>
+                </select>
+                <select id="filter-stock" class="filter-select">
+                    <option value="all">All Stock Levels</option>
+                    <option value="in-stock">In Stock</option>
+                    <option value="low-stock">Low Stock</option>
+                    <option value="out-of-stock">Out of Stock</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Inventory Table Section -->
+        <section class="inventory-section">
+            <h2>Ingredients Inventory</h2>
+
+            <!-- Stock Alert Section -->
+            <section class="alerts-section">
+                <h2>Stock Alerts</h2>
+                <div id="alerts-container" class="alerts-container">
+                    <!-- Alerts will be dynamically generated -->
+                </div>
+            </section>
+
+            <div class="table-container">
+                <table id="inventory-table" class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Ingredient Name</th>
+                            <th>Category</th>
+                            <th>Unit</th>
+                            <th>Stock</th>
+                            <th>Low Stock Alert</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-tbody">
+                        <!-- Rows will be dynamically generated -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Add/Edit Product Modal -->
+        <div id="product-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-title">Add New Product</h2>
+                    <button class="modal-close" id="modal-close">&times;</button>
+                </div>
+                <form id="product-form" class="product-form">
+                    <input type="hidden" id="form-product-id">
+                    
+                    <div class="form-group">
+                        <label for="form-product-name">Ingredient Name *</label>
+                        <input type="text" id="form-product-name" required placeholder="e.g., Chocolate Powder">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="form-product-unit">Unit *</label>
+                        <input type="text" id="form-product-unit" required placeholder="e.g., kg, liters, servings">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="form-product-stock">Stock Quantity *</label>
+                        <input type="number" id="form-product-stock" min="0" step="1" required placeholder="50">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="form-product-low-stock">Low Stock Threshold *</label>
+                        <input type="number" id="form-product-low-stock" min="0" step="1" value="20" required placeholder="20">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="btn-cancel-form">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Ingredient</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Stock Status Modal -->
+        <div id="stock-status-modal" class="modal">
+            <div class="modal-content stock-modal-content">
+                <div class="modal-header">
+                    <h2 id="stock-modal-title">Stock Details</h2>
+                    <button class="modal-close" id="stock-modal-close">&times;</button>
+                </div>
+                <div id="stock-modal-body" class="stock-modal-body">
+                    <!-- Stock details will be injected dynamically -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Meraki Sipside. All rights reserved.</p>
+    </footer>
+</body>
+</html>
