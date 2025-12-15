@@ -105,13 +105,19 @@ function deductIngredients(requirements) {
     const deductions = [];
     const errors = [];
 
+    console.log('Current inventory before deductions:', inventory);
+    console.log('Requirements to deduct:', requirements);
+
     Object.entries(requirements).forEach(([ingredient, amount]) => {
         if (!inventory[ingredient]) {
             errors.push(`Ingredient not found: ${ingredient}`);
+            console.error(`Ingredient not found: ${ingredient}`);
             return;
         }
 
         const currentStock = inventory[ingredient].stock || 0;
+        console.log(`${inventory[ingredient].name}: current=${currentStock}, deducting=${amount}`);
+        
         if (currentStock < amount) {
             errors.push(`Insufficient ${inventory[ingredient].name}: need ${amount}, have ${currentStock}`);
             // Still deduct what we have
@@ -135,11 +141,14 @@ function deductIngredients(requirements) {
                 ingredient: inventory[ingredient]
             });
             inventory[ingredient].stock = newStock;
+            console.log(`${inventory[ingredient].name}: new stock = ${newStock}`);
         }
     });
 
     if (deductions.length > 0) {
+        console.log('Saving inventory with deductions:', inventory);
         saveIngredientsInventory(inventory);
+        console.log('Inventory saved. Verifying:', getIngredientsInventory());
     }
 
     return { deductions, errors };
